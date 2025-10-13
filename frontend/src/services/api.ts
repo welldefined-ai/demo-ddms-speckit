@@ -86,6 +86,12 @@ export const api = {
 
   logout: () => apiClient.post('/api/auth/logout'),
 
+  changePassword: (oldPassword: string, newPassword: string) =>
+    apiClient.post('/api/auth/change-password', {
+      old_password: oldPassword,
+      new_password: newPassword,
+    }),
+
   // Devices
   getDevices: () => apiClient.get('/api/devices'),
 

@@ -155,34 +155,34 @@
 
 ### Tests for User Story 3
 
-- [ ] **T077** [P] [US3] Contract test for POST `/api/auth/login` in `backend/tests/contract/test_auth_api.py`
-- [ ] **T078** [P] [US3] Contract test for POST `/api/auth/logout` in `backend/tests/contract/test_auth_api.py`
-- [ ] **T079** [P] [US3] Contract test for POST `/api/auth/refresh` in `backend/tests/contract/test_auth_api.py`
-- [ ] **T080** [P] [US3] Contract test for POST `/api/users` in `backend/tests/contract/test_user_api.py`
-- [ ] **T081** [P] [US3] Contract test for DELETE `/api/users/{user_id}` in `backend/tests/contract/test_user_api.py`
-- [ ] **T082** [P] [US3] Integration test for RBAC enforcement in `backend/tests/integration/test_rbac.py`
-- [ ] **T083** [P] [US3] E2E test for login and user management in `frontend/tests/e2e/user-management.spec.ts`
+- [X] **T077** [P] [US3] Contract test for POST `/api/auth/login` in `backend/tests/contract/test_auth_api.py`
+- [X] **T078** [P] [US3] Contract test for POST `/api/auth/logout` in `backend/tests/contract/test_auth_api.py`
+- [X] **T079** [P] [US3] Contract test for POST `/api/auth/refresh` in `backend/tests/contract/test_auth_api.py`
+- [X] **T080** [P] [US3] Contract test for POST `/api/users` in `backend/tests/contract/test_user_api.py`
+- [X] **T081** [P] [US3] Contract test for DELETE `/api/users/{user_id}` in `backend/tests/contract/test_user_api.py`
+- [X] **T082** [P] [US3] Integration test for RBAC enforcement in `backend/tests/integration/test_rbac.py`
+- [X] **T083** [P] [US3] E2E test for login and user management in `frontend/tests/e2e/user-management.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] **T084** [US3] Implement authentication service in `backend/src/services/auth_service.py` (login, logout, refresh_token, verify_password, rate_limiting)
-- [ ] **T085** [US3] Implement user service in `backend/src/services/user_service.py` (create_user, delete_user, change_password with bcrypt)
-- [ ] **T086** [US3] Implement POST `/api/auth/login` endpoint in `backend/src/api/auth.py` with rate limiting (5 attempts/15min)
-- [ ] **T087** [US3] Implement POST `/api/auth/logout` endpoint in `backend/src/api/auth.py` (clear refresh token cookie)
-- [ ] **T088** [US3] Implement POST `/api/auth/refresh` endpoint in `backend/src/api/auth.py` (rotate tokens)
-- [ ] **T089** [US3] Implement POST `/api/auth/change-password` endpoint in `backend/src/api/auth.py`
-- [ ] **T090** [US3] Implement POST `/api/users` endpoint in `backend/src/api/users.py` (owner only, cannot create owner role)
-- [ ] **T091** [US3] Implement GET `/api/users` endpoint in `backend/src/api/users.py` (owner/admin only)
-- [ ] **T092** [US3] Implement DELETE `/api/users/{user_id}` endpoint in `backend/src/api/users.py` (owner only, cannot delete owner)
-- [ ] **T093** [P] [US3] Create Login page in `frontend/src/pages/Login.tsx` with form validation
-- [ ] **T094** [P] [US3] Create UserManagement page in `frontend/src/pages/UserManagement.tsx` with user list and creation form
-- [ ] **T095** [P] [US3] Create PrivateRoute component in `frontend/src/components/PrivateRoute.tsx` for authentication check
-- [ ] **T096** [P] [US3] Create RoleGuard component in `frontend/src/components/RoleGuard.tsx` for role-based UI rendering
-- [ ] **T097** [US3] Implement auth context in `frontend/src/services/authContext.tsx` (store user, role, token refresh logic)
-- [ ] **T098** [US3] Add login route and protect other routes with PrivateRoute in `frontend/src/App.tsx`
-- [ ] **T099** [US3] Implement token refresh interceptor in API client (`frontend/src/services/api.ts`)
-- [ ] **T100** [P] [US3] Write unit tests for auth_service >= 80% coverage in `backend/tests/unit/services/test_auth_service.py`
-- [ ] **T101** [P] [US3] Write unit tests for user_service in `backend/tests/unit/services/test_user_service.py`
+- [X] **T084** [US3] Implement authentication service in `backend/src/services/auth_service.py` (login, logout, refresh_token, verify_password, rate_limiting)
+- [X] **T085** [US3] Implement user service in `backend/src/services/user_service.py` (create_user, delete_user, change_password with bcrypt)
+- [X] **T086** [US3] Implement POST `/api/auth/login` endpoint in `backend/src/api/auth.py` with rate limiting (5 attempts/15min)
+- [X] **T087** [US3] Implement POST `/api/auth/logout` endpoint in `backend/src/api/auth.py` (clear refresh token cookie)
+- [X] **T088** [US3] Implement POST `/api/auth/refresh` endpoint in `backend/src/api/auth.py` (rotate tokens)
+- [X] **T089** [US3] Implement POST `/api/auth/change-password` endpoint in `backend/src/api/auth.py`
+- [X] **T090** [US3] Implement POST `/api/users` endpoint in `backend/src/api/users.py` (owner only, cannot create owner role)
+- [X] **T091** [US3] Implement GET `/api/users` endpoint in `backend/src/api/users.py` (owner/admin only)
+- [X] **T092** [US3] Implement DELETE `/api/users/{user_id}` endpoint in `backend/src/api/users.py` (owner only, cannot delete owner)
+- [X] **T093** [P] [US3] Create Login page in `frontend/src/pages/Login.tsx` with form validation
+- [X] **T094** [P] [US3] Create UserManagement page in `frontend/src/pages/UserManagement.tsx` with user list and creation form
+- [X] **T095** [P] [US3] Create PrivateRoute component in `frontend/src/components/PrivateRoute.tsx` for authentication check
+- [X] **T096** [P] [US3] Create RoleGuard component in `frontend/src/components/RoleGuard.tsx` for role-based UI rendering
+- [X] **T097** [US3] Implement auth context in `frontend/src/contexts/AuthContext.tsx` (store user, role, token refresh logic)
+- [X] **T098** [US3] Add login route and protect other routes with PrivateRoute in `frontend/src/App.tsx`
+- [X] **T099** [US3] Implement token refresh interceptor in API client (`frontend/src/services/api.ts`)
+- [X] **T100** [P] [US3] Write unit tests for auth_service >= 80% coverage in `backend/tests/unit/services/test_auth_service.py`
+- [X] **T101** [P] [US3] Write unit tests for user_service in `backend/tests/unit/services/test_user_service.py`
 - [ ] **T102** [P] [US3] Write unit tests for Login component in `frontend/tests/unit/Login.test.tsx`
 - [ ] **T103** [US3] Add translations for authentication and user management UI in locale files
 
