@@ -183,8 +183,8 @@
 - [X] **T099** [US3] Implement token refresh interceptor in API client (`frontend/src/services/api.ts`)
 - [X] **T100** [P] [US3] Write unit tests for auth_service >= 80% coverage in `backend/tests/unit/services/test_auth_service.py`
 - [X] **T101** [P] [US3] Write unit tests for user_service in `backend/tests/unit/services/test_user_service.py`
-- [ ] **T102** [P] [US3] Write unit tests for Login component in `frontend/tests/unit/Login.test.tsx`
-- [ ] **T103** [US3] Add translations for authentication and user management UI in locale files
+- [X] **T102** [P] [US3] Write unit tests for Login component in `frontend/tests/unit/Login.test.tsx`
+- [X] **T103** [US3] Add translations for authentication and user management UI in locale files
 
 **Checkpoint**: User Story 3 complete - multi-user access with RBAC fully functional
 
