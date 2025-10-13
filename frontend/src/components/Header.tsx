@@ -3,16 +3,14 @@
  */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    await logout();
   };
 
   const toggleLanguage = () => {
@@ -26,6 +24,11 @@ const Header: React.FC = () => {
         <h1 className="app-title">{t('app.title')}</h1>
       </div>
       <div className="header-right">
+        {user && (
+          <span className="user-info">
+            {user.username} ({user.role})
+          </span>
+        )}
         <button onClick={toggleLanguage} className="btn-language">
           {i18n.language === 'en' ? '中文' : 'English'}
         </button>
