@@ -117,31 +117,31 @@
 
 ### Tests for User Story 2
 
-- [ ] **T055** [P] [US2] Contract test for POST `/api/devices` in `backend/tests/contract/test_device_crud.py`
-- [ ] **T056** [P] [US2] Contract test for PUT `/api/devices/{device_id}` in `backend/tests/contract/test_device_crud.py`
-- [ ] **T057** [P] [US2] Contract test for DELETE `/api/devices/{device_id}` in `backend/tests/contract/test_device_crud.py`
-- [ ] **T058** [P] [US2] Integration test for Modbus device connection validation in `backend/tests/integration/test_modbus_collector.py`
-- [ ] **T059** [P] [US2] E2E test for device creation workflow in `frontend/tests/e2e/device-config.spec.ts`
+- [X] **T055** [P] [US2] Contract test for POST `/api/devices` in `backend/tests/contract/test_device_crud.py`
+- [X] **T056** [P] [US2] Contract test for PUT `/api/devices/{device_id}` in `backend/tests/contract/test_device_crud.py`
+- [X] **T057** [P] [US2] Contract test for DELETE `/api/devices/{device_id}` in `backend/tests/contract/test_device_crud.py`
+- [X] **T058** [P] [US2] Integration test for Modbus device connection validation in `backend/tests/integration/test_modbus_collector.py`
+- [X] **T059** [P] [US2] E2E test for device creation workflow in `frontend/tests/e2e/device-config.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] **T060** [US2] Implement device CRUD service methods in `backend/src/services/device_service.py` (create_device, update_device, delete_device with validation)
-- [ ] **T061** [US2] Implement POST `/api/devices` endpoint in `backend/src/api/devices.py` with admin/owner RBAC check
-- [ ] **T062** [US2] Implement PUT `/api/devices/{device_id}` endpoint in `backend/src/api/devices.py`
-- [ ] **T063** [US2] Implement DELETE `/api/devices/{device_id}` with keep_data query param in `backend/src/api/devices.py`
-- [ ] **T064** [US2] Implement GET `/api/devices` list endpoint with status filter in `backend/src/api/devices.py`
-- [ ] **T065** [US2] Create Modbus collector in `backend/src/collectors/modbus_collector.py` using pymodbus AsyncModbusTcpClient (connect, read_register, handle errors)
-- [ ] **T066** [US2] Create device manager in `backend/src/collectors/device_manager.py` (schedule collection per sampling_interval, handle reconnection policy)
-- [ ] **T067** [US2] Implement connection test service in `backend/src/services/device_service.py` (test_modbus_connection)
-- [ ] **T068** [P] [US2] Create DeviceForm component in `frontend/src/components/DeviceForm.tsx` with validation (name uniqueness, IP format, threshold ordering per data-model.md)
-- [ ] **T069** [P] [US2] Create DeviceList component in `frontend/src/components/DeviceList.tsx` with status indicators
-- [ ] **T070** [US2] Create DeviceConfig page in `frontend/src/pages/DeviceConfig.tsx` integrating DeviceList + DeviceForm
-- [ ] **T071** [US2] Add device config route with RBAC guard (admin/owner only) in `frontend/src/App.tsx`
-- [ ] **T072** [US2] Implement threshold validation UI in DeviceForm (warning_lower ≤ warning_upper, critical bounds checking)
-- [ ] **T073** [P] [US2] Write unit tests for device CRUD service >= 80% coverage in `backend/tests/unit/services/test_device_service.py`
-- [ ] **T074** [P] [US2] Write unit tests for Modbus collector in `backend/tests/unit/collectors/test_modbus_collector.py`
-- [ ] **T075** [P] [US2] Write unit tests for DeviceForm component in `frontend/tests/unit/DeviceForm.test.tsx`
-- [ ] **T076** [US2] Add translations for device configuration UI in locale files
+- [X] **T060** [US2] Implement device CRUD service methods in `backend/src/services/device_service.py` (create_device, update_device, delete_device with validation)
+- [X] **T061** [US2] Implement POST `/api/devices` endpoint in `backend/src/api/devices.py` with admin/owner RBAC check
+- [X] **T062** [US2] Implement PUT `/api/devices/{device_id}` endpoint in `backend/src/api/devices.py`
+- [X] **T063** [US2] Implement DELETE `/api/devices/{device_id}` with keep_data query param in `backend/src/api/devices.py`
+- [X] **T064** [US2] Implement GET `/api/devices` list endpoint with status filter in `backend/src/api/devices.py`
+- [X] **T065** [US2] Create Modbus collector in `backend/src/collectors/modbus_collector.py` using pymodbus AsyncModbusTcpClient (connect, read_register, handle errors)
+- [X] **T066** [US2] Create device manager in `backend/src/collectors/device_manager.py` (schedule collection per sampling_interval, handle reconnection policy)
+- [X] **T067** [US2] Implement connection test service in `backend/src/services/device_service.py` (test_modbus_connection)
+- [X] **T068** [P] [US2] Create DeviceForm component in `frontend/src/components/DeviceForm.tsx` with validation (name uniqueness, IP format, threshold ordering per data-model.md)
+- [X] **T069** [P] [US2] Create DeviceList component in `frontend/src/components/DeviceList.tsx` with status indicators
+- [X] **T070** [US2] Create DeviceConfig page in `frontend/src/pages/DeviceConfig.tsx` integrating DeviceList + DeviceForm
+- [X] **T071** [US2] Add device config route with RBAC guard (admin/owner only) in `frontend/src/App.tsx`
+- [X] **T072** [US2] Implement threshold validation UI in DeviceForm (warning_lower ≤ warning_upper, critical bounds checking)
+- [X] **T073** [P] [US2] Write unit tests for device CRUD service >= 80% coverage in `backend/tests/unit/services/test_device_service.py`
+- [X] **T074** [P] [US2] Write unit tests for Modbus collector in `backend/tests/unit/collectors/test_modbus_collector.py`
+- [X] **T075** [P] [US2] Write unit tests for DeviceForm component in `frontend/tests/unit/DeviceForm.test.tsx`
+- [X] **T076** [US2] Add translations for device configuration UI in locale files
 
 **Checkpoint**: User Story 2 complete - admins can configure and manage devices with full CRUD operations
 
