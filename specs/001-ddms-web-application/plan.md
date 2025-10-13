@@ -7,7 +7,7 @@
 
 ## Summary
 
-Build a web-based industrial device data monitoring system (DDMS) for real-time monitoring of Modbus devices in factory/coalmine environments. System provides live dashboards with color-coded alerts (normal/warning/critical), historical data analysis, device configuration, user management with role-based access control, multi-language support (English/Chinese), and on-premises deployment. Core capabilities: real-time data collection at 10-second intervals, 90-day data retention, threshold-based alerting, device grouping, and CSV export for external analysis.
+Build a web-based industrial device data monitoring system (DDMS) for real-time monitoring of Modbus devices in factory/coalmine environments. System provides live dashboards with color-coded alerts (normal/warning/critical), historical data analysis, device configuration, user management with role-based access control, and on-premises deployment. Core capabilities: real-time data collection at 10-second intervals, 90-day data retention, threshold-based alerting, device grouping, and CSV export for external analysis.
 
 ## Technical Context
 
@@ -24,13 +24,13 @@ Build a web-based industrial device data monitoring system (DDMS) for real-time 
 - Dashboard load: < 3s initial, real-time updates < 1s
 - Historical queries: < 2s for 24h range
 - Support 100+ concurrent users
-**Constraints**: 
+**Constraints**:
 - On-premises deployment (no cloud dependencies)
 - Works without internet connectivity
-- <= 80% test coverage (constitution requirement)
+- >= 80% test coverage (constitution requirement)
 - 10-second data collection intervals (~8,640 readings/device/day)
 - 90-day default retention (~777,600 readings/device)
-**Scale/Scope**: Up to 1000 devices, 100+ concurrent users, multi-language UI (EN/CN), 6 user stories (P1-P6)
+**Scale/Scope**: Up to 1000 devices, 100+ concurrent users, 5 user stories (P1-P5)
 
 ## Constitution Check
 
@@ -141,7 +141,7 @@ frontend/
 │   ├── components/          # Reusable UI components (DeviceCard, Chart, AlertBanner, etc.)
 │   ├── pages/               # Page components (Dashboard, DeviceConfig, Historical, UserManagement)
 │   ├── services/            # API client, WebSocket handler, state management
-│   ├── locales/             # i18n translation files (en-US.json, zh-CN.json)
+│   ├── locales/             # Translation files (reserved for future i18n)
 │   ├── styles/              # Global styles, themes
 │   └── App.tsx              # Application root
 ├── tests/
@@ -198,14 +198,13 @@ All design decisions align with constitution principles and feature requirements
 All "NEEDS CLARIFICATION" items resolved:
 1. ✅ Python Modbus library: pymodbus 3.x (async support, active maintenance)
 2. ✅ Frontend framework: React 18+ with TypeScript (ecosystem, type safety)
-3. ✅ Charting library: Apache ECharts (performance, i18n support)
+3. ✅ Charting library: Apache ECharts (performance, efficient rendering)
 4. ✅ Time-series storage: PostgreSQL 15+ with TimescaleDB 2.x (scalability, retention automation)
 5. ✅ Frontend testing: Vitest + React Testing Library + Playwright (fast, coverage tooling)
 6. ✅ Authentication: JWT + HTTP-only cookies (stateless, secure)
 7. ✅ Observability: Structured JSON logs + Prometheus metrics (constitution requirement)
 8. ✅ Modbus security: Secure intranet assumption + optional VPN (industrial constraints)
 9. ✅ Real-time updates: Server-Sent Events (SSE) (simple, efficient)
-10. ✅ i18n: react-i18next + gettext (standard tools, dynamic switching)
 
 **Rationale Document**: All decisions documented with alternatives considered and constitution alignment.
 
@@ -335,11 +334,10 @@ The `/speckit.tasks` command will:
 - Real-time monitoring dashboard: ~15 tasks
 - Historical data & export: ~8 tasks
 - Device grouping: ~6 tasks
-- Multi-language support: ~4 tasks
 - System configuration & health: ~4 tasks
 - Deployment & documentation: ~5 tasks
 
-**Total Estimated**: ~75 tasks (each with test requirements)
+**Total Estimated**: ~71 tasks (each with test requirements)
 
 ---
 
@@ -363,7 +361,6 @@ The `/speckit.tasks` command will:
 - **Framework**: React 18+
 - **Build Tool**: Vite
 - **Charting**: Apache ECharts (echarts-for-react)
-- **i18n**: react-i18next
 - **HTTP Client**: axios or fetch
 - **Real-time**: EventSource API (SSE)
 - **Testing**: Vitest + React Testing Library + Playwright
@@ -408,5 +405,4 @@ specs/001-ddms-web-application/
 - >= 80% test coverage will be enforced on all tasks in Phase 2
 - On-premises deployment optimized (no cloud dependencies)
 - Industrial constraints respected (Modbus TCP unencrypted, secure intranet)
-- Multi-language support (EN/CN) integrated throughout stack
 - Performance targets defined and achievable with selected architecture
