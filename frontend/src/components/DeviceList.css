@@ -1,0 +1,206 @@
+.device-list {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.devices-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.devices-table thead {
+  background: #fafafa;
+}
+
+.devices-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 2px solid #e8e8e8;
+}
+
+.devices-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.devices-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.device-name {
+  font-weight: 500;
+}
+
+.device-address {
+  font-family: 'Courier New', monospace;
+  color: #595959;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-connected {
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.status-disconnected {
+  background: #f5f5f5;
+  color: #8c8c8c;
+  border: 1px solid #d9d9d9;
+}
+
+.status-error {
+  background: #fff1f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+}
+
+.last-reading {
+  color: #8c8c8c;
+  font-size: 13px;
+}
+
+.actions-column {
+  width: 150px;
+}
+
+.actions-cell {
+  padding: 8px 16px !important;
+}
+
+.actions-group {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-icon .icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.btn-icon:hover {
+  border-color: #1890ff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-test:hover {
+  border-color: #52c41a;
+  background: #f6ffed;
+}
+
+.btn-edit:hover {
+  border-color: #1890ff;
+  background: #e6f7ff;
+}
+
+.btn-delete:hover {
+  border-color: #ff4d4f;
+  background: #fff1f0;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: #8c8c8c;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #1890ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #8c8c8c;
+}
+
+.empty-state p {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.empty-hint {
+  font-size: 14px;
+  color: #bfbfbf;
+}
+
+@media (max-width: 1024px) {
+  .devices-table {
+    font-size: 13px;
+  }
+
+  .devices-table th,
+  .devices-table td {
+    padding: 10px 12px;
+  }
+
+  .actions-group {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .btn-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .btn-icon .icon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .device-list {
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  .devices-table {
+    min-width: 800px;
+  }
+}
