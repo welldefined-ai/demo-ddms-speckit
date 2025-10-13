@@ -5,6 +5,8 @@ from fastapi import APIRouter
 from src.api.devices import router as devices_router
 from src.api.auth import router as auth_router
 from src.api.users import router as users_router
+from src.api.readings import router as readings_router
+from src.api.export import router as export_router
 
 # Create main API router
 api_router = APIRouter(prefix="/api")
@@ -16,10 +18,12 @@ api_router.include_router(devices_router)
 api_router.include_router(auth_router)
 api_router.include_router(users_router)
 
+# Include readings and export routes (User Story 4)
+api_router.include_router(readings_router)
+api_router.include_router(export_router)
+
 # Placeholder for sub-routers to be added later:
-# - readings_router (GET /api/readings/{device_id}, etc.)
 # - groups_router (GET/POST/PUT/DELETE /api/groups, etc.)
-# - export_router (GET /api/export/device/{device_id}, etc.)
 # - system_router (GET /api/system/health, /api/system/config, etc.)
 
 

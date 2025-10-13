@@ -224,5 +224,36 @@
       "criticalLowerInvalid": "Critical lower threshold must be less than warning lower threshold",
       "criticalUpperInvalid": "Critical upper threshold must be greater than warning upper threshold"
     }
+  },
+  "historical": {
+    "title": "Historical Data Analysis",
+    "description": "View and analyze historical device data with customizable time ranges",
+    "selectDevice": "Select Device",
+    "selectDevicePlaceholder": "-- Select a device --",
+    "selectDeviceToStart": "Select a device to view historical data",
+    "selectTimeRange": "Select a time range to view data",
+    "timeRange": "Time Range",
+    "lastHour": "Last Hour",
+    "last24Hours": "Last 24 Hours",
+    "last7Days": "Last 7 Days",
+    "last30Days": "Last 30 Days",
+    "custom": "Custom",
+    "customRange": "{{start}} - {{end}}",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "apply": "Apply",
+    "selectBothDates": "Please select both start and end dates",
+    "invalidDateRange": "Start date must be before end date",
+    "zoom": "Zoom",
+    "resetZoom": "Reset Zoom",
+    "restore": "Restore",
+    "dataPoints": "{{count}} data points",
+    "exporting": "Exporting...",
+    "exportFailed": "Failed to export data",
+    "deviceNotFound": "Device not found",
+    "fetchDevicesFailed": "Failed to load devices",
+    "fetchDataFailed": "Failed to load data",
+    "noData": "No data available for selected time range",
+    "noDataAvailable": "No data available for the selected time range"
   }
 }

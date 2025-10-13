@@ -1,0 +1,124 @@
+/* Historical page styles */
+
+.historical {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.historical h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: #262626;
+}
+
+.historical .page-description {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-bottom: 24px;
+}
+
+.historical .device-selector-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.historical .device-selector {
+  padding: 10px 16px;
+  font-size: 14px;
+  border: 1px solid #d9d9d9;
+  borderRadius: 4px;
+  min-width: 250px;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.historical .device-selector:hover:not(:disabled) {
+  border-color: #40a9ff;
+}
+
+.historical .device-selector:focus {
+  outline: none;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.historical .device-selector:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.historical-chart-section {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.historical-chart-section h2 {
+  font-size: 20px;
+  color: #262626;
+  margin: 0;
+}
+
+.empty-state,
+.no-data-message {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.empty-state svg,
+.no-data-message svg {
+  opacity: 0.5;
+}
+
+.alert-error {
+  padding: 12px 16px;
+  background-color: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 4px;
+  color: #cf1322;
+  margin-top: 16px;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 32px;
+}
+
+@media (max-width: 768px) {
+  .historical {
+    padding: 16px;
+  }
+
+  .historical h1 {
+    font-size: 24px;
+  }
+
+  .historical .device-selector-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .historical .device-selector-section label {
+    margin-bottom: 8px;
+  }
+
+  .historical .device-selector {
+    width: 100%;
+  }
+
+  .historical-chart-section {
+    padding: 16px;
+  }
+
+  .historical-chart-section > div {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .historical-chart-section h2 {
+    margin-bottom: 16px !important;
+  }
+}

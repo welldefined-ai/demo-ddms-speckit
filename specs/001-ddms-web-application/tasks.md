@@ -198,28 +198,28 @@
 
 ### Tests for User Story 4
 
-- [ ] **T104** [P] [US4] Contract test for GET `/api/readings/{device_id}` with time range in `backend/tests/contract/test_historical_api.py`
-- [ ] **T105** [P] [US4] Contract test for GET `/api/export/device/{device_id}` in `backend/tests/contract/test_export_api.py`
-- [ ] **T106** [P] [US4] Integration test for TimescaleDB continuous aggregates in `backend/tests/integration/test_timescale_aggregates.py`
-- [ ] **T107** [P] [US4] E2E test for historical view and CSV export in `frontend/tests/e2e/historical-analysis.spec.ts`
+- [X] **T104** [P] [US4] Contract test for GET `/api/readings/{device_id}` with time range in `backend/tests/contract/test_historical_api.py`
+- [X] **T105** [P] [US4] Contract test for GET `/api/export/device/{device_id}` in `backend/tests/contract/test_export_api.py`
+- [X] **T106** [P] [US4] Integration test for TimescaleDB continuous aggregates in `backend/tests/integration/test_timescale_aggregates.py`
+- [X] **T107** [P] [US4] E2E test for historical view and CSV export in `frontend/tests/e2e/historical-analysis.spec.ts`
 
 ### Implementation for User Story 4
 
-- [ ] **T108** [US4] Implement reading query service in `backend/src/services/reading_service.py` (query_readings with time_range, aggregate_level using continuous aggregates)
-- [ ] **T109** [US4] Implement CSV export service in `backend/src/services/export_service.py` (generate CSV with timestamps, values, units per FR-021)
-- [ ] **T110** [US4] Implement GET `/api/readings/{device_id}` endpoint in `backend/src/api/readings.py` with pagination
-- [ ] **T111** [US4] Implement GET `/api/export/device/{device_id}` endpoint in `backend/src/api/export.py` returning CSV file
-- [ ] **T112** [US4] Create continuous aggregate views in migration `backend/src/db/migrations/versions/002_continuous_aggregates.py` (1min, 1hour, 1day rollups)
-- [ ] **T113** [P] [US4] Create HistoricalChart component in `frontend/src/components/HistoricalChart.tsx` with ECharts zoom/pan functionality
-- [ ] **T114** [P] [US4] Create TimeRangePicker component in `frontend/src/components/TimeRangePicker.tsx` (last hour/24h/week/custom)
-- [ ] **T115** [P] [US4] Create ExportButton component in `frontend/src/components/ExportButton.tsx` triggering CSV download
-- [ ] **T116** [US4] Create Historical page in `frontend/src/pages/Historical.tsx` integrating HistoricalChart + TimeRangePicker + ExportButton
-- [ ] **T117** [US4] Add historical route in `frontend/src/App.tsx`
-- [ ] **T118** [US4] Implement data downsampling in HistoricalChart for large datasets (>1000 points)
-- [ ] **T119** [P] [US4] Write unit tests for reading_service >= 80% coverage in `backend/tests/unit/services/test_reading_service.py`
-- [ ] **T120** [P] [US4] Write unit tests for export_service in `backend/tests/unit/services/test_export_service.py`
-- [ ] **T121** [P] [US4] Write unit tests for HistoricalChart component in `frontend/tests/unit/HistoricalChart.test.tsx`
-- [ ] **T122** [US4] Add translations for historical analysis UI in locale files
+- [X] **T108** [US4] Implement reading query service in `backend/src/services/reading_service.py` (query_readings with time_range, aggregate_level using continuous aggregates)
+- [X] **T109** [US4] Implement CSV export service in `backend/src/services/export_service.py` (generate CSV with timestamps, values, units per FR-021)
+- [X] **T110** [US4] Implement GET `/api/readings/{device_id}` endpoint in `backend/src/api/readings.py` with pagination
+- [X] **T111** [US4] Implement GET `/api/export/device/{device_id}` endpoint in `backend/src/api/export.py` returning CSV file
+- [X] **T112** [US4] Create continuous aggregate views in migration `backend/src/db/migrations/versions/002_continuous_aggregates.py` (1min, 1hour, 1day rollups)
+- [X] **T113** [P] [US4] Create HistoricalChart component in `frontend/src/components/HistoricalChart.tsx` with ECharts zoom/pan functionality
+- [X] **T114** [P] [US4] Create TimeRangePicker component in `frontend/src/components/TimeRangePicker.tsx` (last hour/24h/week/custom)
+- [X] **T115** [P] [US4] Create ExportButton component in `frontend/src/components/ExportButton.tsx` triggering CSV download
+- [X] **T116** [US4] Create Historical page in `frontend/src/pages/Historical.tsx` integrating HistoricalChart + TimeRangePicker + ExportButton
+- [X] **T117** [US4] Add historical route in `frontend/src/App.tsx`
+- [X] **T118** [US4] Implement data downsampling in HistoricalChart for large datasets (>1000 points)
+- [X] **T119** [P] [US4] Write unit tests for reading_service >= 80% coverage in `backend/tests/unit/services/test_reading_service.py`
+- [X] **T120** [P] [US4] Write unit tests for export_service in `backend/tests/unit/services/test_export_service.py`
+- [X] **T121** [P] [US4] Write unit tests for HistoricalChart component in `frontend/tests/unit/HistoricalChart.test.tsx`
+- [X] **T122** [US4] Add translations for historical analysis UI in locale files
 
 **Checkpoint**: User Story 4 complete - historical data analysis and export fully functional
 
