@@ -9,9 +9,9 @@ import Layout from './components/Layout';
 
 // Import pages
 import Dashboard from './pages/Dashboard';
+import DeviceConfig from './pages/DeviceConfig';
 
 // Placeholder pages - will be implemented in upcoming user stories
-const DevicesPage = () => <div>Devices Page (Coming in US2)</div>;
 const HistoricalPage = () => <div>Historical Page (Coming in US4)</div>;
 const GroupsPage = () => <div>Groups Page (Coming in US5)</div>;
 const UsersPage = () => <div>Users Page (Coming in US3)</div>;
@@ -30,7 +30,7 @@ const App: React.FC = () => {
             {/* Protected routes with layout */}
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/devices" element={<DevicesPage />} />
+              <Route path="/devices" element={<DeviceConfig />} />
               <Route path="/historical" element={<HistoricalPage />} />
               <Route path="/groups" element={<GroupsPage />} />
               <Route path="/users" element={<UsersPage />} />
