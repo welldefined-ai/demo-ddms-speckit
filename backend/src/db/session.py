@@ -3,7 +3,7 @@ Database session manager with connection pooling
 """
 import os
 from typing import Generator
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
 
@@ -63,7 +63,7 @@ def init_db() -> None:
     """
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
         print("Database connection successful")
     except Exception as e:
         print(f"Database connection failed: {e}")
