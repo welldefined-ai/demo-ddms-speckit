@@ -262,36 +262,7 @@
 
 ---
 
-## Phase 8: User Story 6 - Multi-Language Support (Priority: P6)
-
-**Goal**: Users can switch between English and Chinese with preference saved per account
-
-**Independent Test**: Switch language from English to Chinese and back, verify all UI elements translate correctly, confirm preference persists after logout/login
-
-### Tests for User Story 6
-
-- [ ] **T144** [P] [US6] Integration test for language preference persistence in `backend/tests/integration/test_user_language.py`
-- [ ] **T145** [P] [US6] E2E test for language switching in `frontend/tests/e2e/language-switching.spec.ts`
-
-### Implementation for User Story 6
-
-- [ ] **T146** [US6] Implement update_language_preference in `backend/src/services/user_service.py`
-- [ ] **T147** [US6] Implement PUT `/api/users/{user_id}/language` endpoint in `backend/src/api/users.py`
-- [ ] **T148** [P] [US6] Complete all EN translations in `frontend/src/locales/en-US.json` (dashboard, device config, users, historical, groups, errors, validation)
-- [ ] **T149** [P] [US6] Complete all CN translations in `frontend/src/locales/zh-CN.json` (all UI strings from EN file)
-- [ ] **T150** [P] [US6] Create LanguageSwitcher component in `frontend/src/components/LanguageSwitcher.tsx`
-- [ ] **T151** [US6] Add LanguageSwitcher to Header component
-- [ ] **T152** [US6] Implement language preference sync: load from API on login, save to API on change in `frontend/src/services/authContext.tsx`
-- [ ] **T153** [US6] Configure ECharts locale for axis labels and tooltips in Chart components (use i18n context)
-- [ ] **T154** [US6] Implement date/time formatting with user's language using Intl.DateTimeFormat in `frontend/src/utils/formatters.ts`
-- [ ] **T155** [P] [US6] Write unit tests for language preference logic in `backend/tests/unit/services/test_user_service.py`
-- [ ] **T156** [P] [US6] Write unit tests for LanguageSwitcher component in `frontend/tests/unit/LanguageSwitcher.test.tsx`
-
-**Checkpoint**: User Story 6 complete - full multi-language support with persistence
-
----
-
-## Phase 9: Polish & Cross-Cutting Concerns
+## Phase 8: Polish & Cross-Cutting Concerns
 
 **Purpose**: Improvements that affect multiple user stories, system hardening, and deployment readiness
 
@@ -303,11 +274,13 @@
 - [ ] **T162** [P] [POLISH] Create TimescaleDB retention policy in migration `backend/src/db/migrations/versions/003_retention_policy.py` (automatic cleanup per device.retention_days)
 - [ ] **T163** [P] [POLISH] Create TimescaleDB compression policy in migration (compress chunks older than 7 days)
 - [ ] **T164** [P] [POLISH] Implement device reconnection worker in `backend/src/collectors/device_manager.py` (60s retry, notify after 3 failures per clarification)
+- [ ] **T164a** [P] [POLISH] Implement connection failure notification banner component in `frontend/src/components/ConnectionFailureBanner.tsx` and notification service in `backend/src/services/notification_service.py` (FR-034b)
 - [ ] **T165** [P] [POLISH] Create Settings page in `frontend/src/pages/Settings.tsx` for system configuration (owner only)
 - [ ] **T166** [P] [POLISH] Create production Docker Compose file `docker-compose.prod.yml` with optimized settings
 - [ ] **T167** [P] [POLISH] Create production Dockerfiles with multi-stage builds (`docker/backend.Dockerfile`, `docker/frontend.Dockerfile`)
 - [ ] **T168** [P] [POLISH] Create deployment script `scripts/deploy.sh` per quickstart.md
 - [ ] **T169** [P] [POLISH] Create backup script `scripts/backup.sh` with pg_dump automation
+- [ ] **T169a** [P] [POLISH] Configure automated backup schedule via cron job or systemd timer to run `scripts/backup.sh` daily at 2 AM (FR-058)
 - [ ] **T170** [P] [POLISH] Create database initialization script `scripts/init-db.sh`
 - [ ] **T171** [P] [POLISH] Create Nginx configuration template in `docker/nginx.conf` with TLS 1.3, SSE support, reverse proxy
 - [ ] **T172** [P] [POLISH] Create CI pipeline configuration `.github/workflows/ci.yml` (run tests, check coverage >= 80%, lint)
@@ -338,10 +311,10 @@
 
 - **Setup (Phase 1)**: No dependencies - can start immediately
 - **Foundational (Phase 2)**: Depends on Setup completion - **BLOCKS all user stories**
-- **User Stories (Phase 3-8)**: All depend on Foundational phase completion
+- **User Stories (Phase 3-7)**: All depend on Foundational phase completion
   - User stories CAN proceed in parallel if team is staffed
-  - OR sequentially in priority order: US1 (P1) → US2 (P2) → US3 (P3) → US4 (P4) → US5 (P5) → US6 (P6)
-- **Polish (Phase 9)**: Depends on desired user stories being complete (minimum US1-US3 for MVP)
+  - OR sequentially in priority order: US1 (P1) → US2 (P2) → US3 (P3) → US4 (P4) → US5 (P5)
+- **Polish (Phase 8)**: Depends on desired user stories being complete (minimum US1-US3 for MVP)
 
 ### User Story Dependencies
 
@@ -350,7 +323,6 @@
 - **User Story 3 (P3)**: Depends only on Foundational - Required for multi-user access
 - **User Story 4 (P4)**: Depends only on Foundational - Requires US1/US2 for device data to exist
 - **User Story 5 (P5)**: Depends on US2 (devices must exist) - Can proceed after US2 complete
-- **User Story 6 (P6)**: Depends only on Foundational - Can start anytime, affects all UI
 
 ### Within Each User Story
 
@@ -374,9 +346,9 @@
 - Frontend base setup (T028-T032) can run in parallel with backend
 - Tests (T034-T035) can run in parallel after code complete
 
-**Across User Stories (Phase 3-8)**:
+**Across User Stories (Phase 3-7)**:
 - Once Foundational complete, **entire user stories can be worked on in parallel by different developers**
-- Example: Developer A does US1, Developer B does US3, Developer C does US6 simultaneously
+- Example: Developer A does US1, Developer B does US3, Developer C does US4 simultaneously
 
 **Within Each User Story**:
 - All tests marked [P] can run in parallel
@@ -435,10 +407,9 @@ Task T053: "Unit tests for Chart component"
 1. **MVP** (US1-US3) → Deploy and gather feedback
 2. **Add US4: Historical Analysis** → Deploy update (~3-4 days)
 3. **Add US5: Device Grouping** → Deploy update (~3-4 days)
-4. **Add US6: Multi-Language** → Deploy update (~2-3 days)
-5. **Complete Polish Phase** → Final production deployment (~3-5 days)
+4. **Complete Polish Phase** → Final production deployment (~3-5 days)
 
-**Full Timeline**: ~25-35 days (single developer) or ~12-18 days (3-4 developers in parallel)
+**Full Timeline**: ~22-30 days (single developer) or ~11-15 days (3-4 developers in parallel)
 
 ### Parallel Team Strategy
 
@@ -450,7 +421,7 @@ Task T053: "Unit tests for Chart component"
 
 **All three stories complete in ~4 days instead of 12 days**
 
-Then proceed to US4-US6 with similar parallelization.
+Then proceed to US4-US5 with similar parallelization.
 
 ---
 
@@ -489,9 +460,8 @@ Per constitution Principle III (NON-NEGOTIABLE):
 | **Phase 5: User Story 3 (P3)** | 27 tasks | User account management |
 | **Phase 6: User Story 4 (P4)** | 19 tasks | Historical data analysis |
 | **Phase 7: User Story 5 (P5)** | 21 tasks | Device grouping |
-| **Phase 8: User Story 6 (P6)** | 13 tasks | Multi-language support |
-| **Phase 9: Polish** | 34 tasks | Cross-cutting concerns |
-| **TOTAL** | **190 tasks** | Complete DDMS system |
+| **Phase 8: Polish** | 36 tasks | Cross-cutting concerns |
+| **TOTAL** | **179 tasks** | Complete DDMS system |
 
 **MVP Subset**: 83 tasks (Setup + Foundational + US1-US3 + Essential Polish)
 
@@ -501,11 +471,11 @@ Per constitution Principle III (NON-NEGOTIABLE):
 
 - **Setup Phase**: 8 of 10 tasks can run in parallel
 - **Foundational Phase**: 12 of 26 tasks can run in parallel
-- **User Story Phases**: Entire user stories (US1-US6) can run in parallel after Foundational complete
+- **User Story Phases**: Entire user stories (US1-US5) can run in parallel after Foundational complete
 - **Within User Stories**: ~40% of tasks within each story marked [P] for parallel execution
-- **Polish Phase**: 32 of 34 tasks can run in parallel
+- **Polish Phase**: 34 of 36 tasks can run in parallel
 
-**Maximum Parallelization**: With sufficient team size, after Foundational phase completes, all 6 user stories can be developed simultaneously, reducing timeline by ~80%.
+**Maximum Parallelization**: With sufficient team size, after Foundational phase completes, all 5 user stories can be developed simultaneously, reducing timeline by ~80%.
 
 ---
 

@@ -112,23 +112,6 @@ An admin organizes devices into logical groups (by production line, building are
 
 ---
 
-### User Story 6 - Multi-Language Support (Priority: P6)
-
-Users can switch between English and Chinese languages in the UI, with their language preference saved per account for consistent experience across sessions.
-
-**Why this priority**: Internationalization is important for Chinese factory environments but system is fully functional in English for initial deployment.
-
-**Independent Test**: Can be tested by switching language from English to Chinese and back, verifying all UI elements translate correctly, and confirming preference persists after logout/login.
-
-**Acceptance Scenarios**:
-
-1. **Given** user is logged in, **When** they access language settings, **Then** English (en-US) and Chinese (zh-CN) options are available
-2. **Given** user selects Chinese language, **When** UI updates, **Then** all labels, buttons, messages, and help text display in Chinese
-3. **Given** user selects a language, **When** they log out and log back in, **Then** previously selected language is automatically applied
-4. **Given** user switches language, **When** viewing charts and data, **Then** axis labels, units, and tooltips display in selected language
-
----
-
 ### Edge Cases
 
 - **Network interruption**: What happens when connection to a Modbus device is lost during operation? System marks device offline, shows last successful reading timestamp, displays communication error indicator, and retries connection every 60 seconds indefinitely. Admin users receive notification after 3 consecutive connection failures.
@@ -210,14 +193,6 @@ Users can switch between English and Chinese languages in the UI, with their lan
 - **FR-040**: System MUST display group-level alert summary (count of devices in normal/warning/critical states)
 - **FR-041**: System MUST allow CSV export for all devices in a group with timestamp-aligned data
 
-#### Internationalization
-
-- **FR-042**: System MUST support English (en-US) language
-- **FR-043**: System MUST support Chinese (zh-CN) language
-- **FR-044**: System MUST allow users to switch language from UI settings
-- **FR-045**: System MUST save language preference per user account and apply on login
-- **FR-046**: System MUST translate all UI elements, labels, buttons, messages, and help text for supported languages
-
 #### User Interface
 
 - **FR-047**: System MUST provide clean, modern interface design with professional appearance suitable for industrial environments
@@ -259,7 +234,7 @@ Users can switch between English and Chinese languages in the UI, with their lan
 
 ### Key Entities
 
-- **User**: Represents a system user with username, password (hashed), role (owner/admin/read-only), language preference, and account creation timestamp. Owner has full privileges, admin can configure devices, read-only can only view data.
+- **User**: Represents a system user with username, password (hashed), role (owner/admin/read-only), and account creation timestamp. Owner has full privileges, admin can configure devices, read-only can only view data.
 
 - **Device**: Represents a monitoring device uniquely identified by its user-assigned device name (must be unique across system). Contains connection parameters (Modbus settings), description, reading units, sampling interval (default 10 seconds), retention period (default 90 days), threshold limits (warning/critical upper/lower), hysteresis values, connection status, last reading timestamp. Devices collect time-series data at configured intervals.
 
@@ -287,8 +262,6 @@ Users can switch between English and Chinese languages in the UI, with their lan
 
 - **User Training**: Assumes basic familiarity with web applications; comprehensive user documentation provided for device configuration.
 
-- **Language Support**: Initial release supports English and Chinese; additional languages can be added through translation files.
-
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
@@ -305,11 +278,10 @@ Users can switch between English and Chinese languages in the UI, with their lan
 - **SC-010**: System uptime exceeds 99.5% during normal operation (excluding planned maintenance)
 - **SC-011**: Data loss during normal operation is zero; all readings collected per sampling interval are persisted
 - **SC-012**: Owner can create new user accounts and assign roles in under 2 minutes
-- **SC-013**: Language switching between English and Chinese occurs instantly (<1 second) without page reload
-- **SC-014**: System works on tablets with touch-friendly controls requiring no mouse/keyboard
-- **SC-015**: System successfully deploys on customer's on-premises server and operates without internet connectivity
-- **SC-016**: Operators require less than 30 minutes of training to use core monitoring features effectively
-- **SC-017**: 90% of device threshold violations are detected and displayed within 10 seconds of occurrence
-- **SC-018**: Zero security vulnerabilities in authentication and authorization mechanisms (verified through security audit)
-- **SC-019**: System automatically recovers from database connection failures within 30 seconds
-- **SC-020**: Historical data retention and cleanup operates automatically without manual intervention
+- **SC-013**: System works on tablets with touch-friendly controls requiring no mouse/keyboard
+- **SC-014**: System successfully deploys on customer's on-premises server and operates without internet connectivity
+- **SC-015**: Operators require less than 30 minutes of training to use core monitoring features effectively
+- **SC-016**: 90% of device threshold violations are detected and displayed within 10 seconds of occurrence
+- **SC-017**: Zero security vulnerabilities in authentication and authorization mechanisms (verified through security audit)
+- **SC-018**: System automatically recovers from database connection failures within 30 seconds
+- **SC-019**: Historical data retention and cleanup operates automatically without manual intervention
