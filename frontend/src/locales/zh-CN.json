@@ -1,0 +1,71 @@
+{
+  "app": {
+    "title": "DDMS - 设备数据监控系统",
+    "subtitle": "实时工业设备监控"
+  },
+  "common": {
+    "ok": "确定",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "search": "搜索",
+    "filter": "筛选",
+    "export": "导出",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "confirm": "确认",
+    "back": "返回",
+    "next": "下一步",
+    "submit": "提交",
+    "reset": "重置"
+  },
+  "auth": {
+    "login": "登录",
+    "logout": "退出",
+    "username": "用户名",
+    "password": "密码",
+    "loginError": "用户名或密码错误",
+    "sessionExpired": "会话已过期，请重新登录"
+  },
+  "nav": {
+    "dashboard": "仪表板",
+    "devices": "设备",
+    "historical": "历史数据",
+    "groups": "设备分组",
+    "users": "用户管理",
+    "settings": "设置"
+  },
+  "device": {
+    "status": {
+      "online": "在线",
+      "offline": "离线",
+      "error": "错误",
+      "normal": "正常",
+      "warning": "警告",
+      "critical": "严重"
+    }
+  },
+  "dashboard": {
+    "realTimeChart": "实时图表",
+    "noDevices": "未配置设备。添加设备以开始监控。",
+    "connectionConnecting": "正在连接到服务器...",
+    "connectionError": "连接错误。正在重试...",
+    "connectionDisconnected": "已断开与服务器的连接"
+  },
+  "chart": {
+    "threshold": {
+      "criticalUpper": "严重上限",
+      "criticalLower": "严重下限",
+      "warningUpper": "警告上限",
+      "warningLower": "警告下限"
+    }
+  },
+  "role": {
+    "owner": "所有者",
+    "admin": "管理员",
+    "read_only": "只读"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "app": {
+    "title": "DDMS - Device Data Monitoring System",
+    "subtitle": "Real-Time Industrial Device Monitoring"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "reset": "Reset"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "loginError": "Invalid username or password",
+    "sessionExpired": "Session expired, please login again"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "devices": "Devices",
+    "historical": "Historical Data",
+    "groups": "Device Groups",
+    "users": "User Management",
+    "settings": "Settings"
+  },
+  "device": {
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "error": "Error",
+      "normal": "Normal",
+      "warning": "Warning",
+      "critical": "Critical"
+    }
+  },
+  "dashboard": {
+    "realTimeChart": "Real-Time Chart",
+    "noDevices": "No devices configured. Add devices to start monitoring.",
+    "connectionConnecting": "Connecting to server...",
+    "connectionError": "Connection error. Retrying...",
+    "connectionDisconnected": "Disconnected from server"
+  },
+  "chart": {
+    "threshold": {
+      "criticalUpper": "Critical Upper",
+      "criticalLower": "Critical Lower",
+      "warningUpper": "Warning Upper",
+      "warningLower": "Warning Lower"
+    }
+  },
+  "role": {
+    "owner": "Owner",
+    "admin": "Administrator",
+    "read_only": "Read Only"
+  }
+}
