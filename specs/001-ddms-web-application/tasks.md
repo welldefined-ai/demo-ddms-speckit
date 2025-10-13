@@ -23,16 +23,16 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] **T001** [P] [SETUP] Create backend directory structure (`backend/src/{models,services,collectors,api,db,utils}`, `backend/tests/{unit,integration,contract}`)
-- [ ] **T002** [P] [SETUP] Create frontend directory structure (`frontend/src/{components,pages,services,locales,styles}`, `frontend/tests/{unit,e2e}`)
-- [ ] **T003** [SETUP] Initialize Python 3.11+ backend with FastAPI dependencies in `backend/requirements.txt` (FastAPI, SQLAlchemy, pymodbus, python-jose, bcrypt, pytest, pytest-cov)
-- [ ] **T004** [SETUP] Initialize React 18+ frontend with TypeScript in `frontend/package.json` (React, TypeScript, Vite, ECharts, react-i18next, Vitest, Playwright)
-- [ ] **T005** [P] [SETUP] Configure black + flake8 + mypy in `backend/pyproject.toml` and `backend/.flake8`
-- [ ] **T006** [P] [SETUP] Configure ESLint + Prettier in `frontend/.eslintrc.js` and `frontend/.prettierrc`
-- [ ] **T007** [P] [SETUP] Configure pytest with coverage threshold >= 80% in `backend/pytest.ini`
-- [ ] **T008** [P] [SETUP] Configure Vitest with coverage in `frontend/vite.config.ts`
-- [ ] **T009** [P] [SETUP] Create Docker development environment (`docker/backend.Dockerfile`, `docker/frontend.Dockerfile`, `docker-compose.yml` with PostgreSQL + TimescaleDB)
-- [ ] **T010** [P] [SETUP] Create environment variable templates (`.env.example` for backend and frontend per quickstart.md)
+- [X] **T001** [P] [SETUP] Create backend directory structure (`backend/src/{models,services,collectors,api,db,utils}`, `backend/tests/{unit,integration,contract}`)
+- [X] **T002** [P] [SETUP] Create frontend directory structure (`frontend/src/{components,pages,services,locales,styles}`, `frontend/tests/{unit,e2e}`)
+- [X] **T003** [SETUP] Initialize Python 3.11+ backend with FastAPI dependencies in `backend/requirements.txt` (FastAPI, SQLAlchemy, pymodbus, python-jose, bcrypt, pytest, pytest-cov)
+- [X] **T004** [SETUP] Initialize React 18+ frontend with TypeScript in `frontend/package.json` (React, TypeScript, Vite, ECharts, react-i18next, Vitest, Playwright)
+- [X] **T005** [P] [SETUP] Configure black + flake8 + mypy in `backend/pyproject.toml` and `backend/.flake8`
+- [X] **T006** [P] [SETUP] Configure ESLint + Prettier in `frontend/.eslintrc.js` and `frontend/.prettierrc`
+- [X] **T007** [P] [SETUP] Configure pytest with coverage threshold >= 80% in `backend/pytest.ini`
+- [X] **T008** [P] [SETUP] Configure Vitest with coverage in `frontend/vite.config.ts`
+- [X] **T009** [P] [SETUP] Create Docker development environment (`docker/backend.Dockerfile`, `docker/frontend.Dockerfile`, `docker-compose.yml` with PostgreSQL + TimescaleDB)
+- [X] **T010** [P] [SETUP] Create environment variable templates (`.env.example` for backend and frontend per quickstart.md)
 
 ---
 
@@ -42,32 +42,32 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] **T011** [FOUND] Setup Alembic migrations framework in `backend/src/db/` with initial migration script
-- [ ] **T012** [FOUND] Create TimescaleDB hypertable configuration in initial migration (`backend/src/db/migrations/versions/001_initial_schema.py`)
-- [ ] **T013** [P] [FOUND] Implement User model in `backend/src/models/user.py` with SQLAlchemy (username, password_hash, role enum, language_preference)
-- [ ] **T014** [P] [FOUND] Implement Device model in `backend/src/models/device.py` with Modbus fields per data-model.md
-- [ ] **T015** [P] [FOUND] Implement Reading model (TimescaleDB hypertable) in `backend/src/models/reading.py`
-- [ ] **T016** [P] [FOUND] Implement Group model in `backend/src/models/group.py`
-- [ ] **T017** [P] [FOUND] Implement DeviceGroup association model in `backend/src/models/device_group.py`
-- [ ] **T018** [P] [FOUND] Implement Configuration singleton model in `backend/src/models/configuration.py`
-- [ ] **T019** [FOUND] Create database session manager in `backend/src/db/session.py` with connection pooling
-- [ ] **T020** [P] [FOUND] Implement JWT authentication utilities in `backend/src/utils/auth.py` (create_access_token, verify_token, bcrypt helpers)
-- [ ] **T021** [P] [FOUND] Implement RBAC decorators in `backend/src/utils/rbac.py` (require_owner, require_admin, require_auth)
-- [ ] **T022** [P] [FOUND] Implement structured JSON logging in `backend/src/utils/logging.py` per constitution
-- [ ] **T023** [P] [FOUND] Create Pydantic request/response schemas in `backend/src/api/schemas.py` (UserSchema, DeviceSchema, ReadingSchema, GroupSchema, ConfigurationSchema per OpenAPI spec)
-- [ ] **T024** [FOUND] Setup FastAPI app in `backend/src/main.py` with middleware (CORS, exception handlers, request logging)
-- [ ] **T025** [P] [FOUND] Create base API router structure in `backend/src/api/routes.py`
-- [ ] **T026** [P] [FOUND] Implement error response schemas and handlers in `backend/src/api/errors.py`
-- [ ] **T027** [P] [FOUND] Create Prometheus metrics exporter in `backend/src/utils/metrics.py` (device_readings_total, api_request_duration_seconds, etc.)
-- [ ] **T028** [P] [FOUND] Setup React Router and base layout in `frontend/src/App.tsx`
-- [ ] **T029** [P] [FOUND] Create API client service in `frontend/src/services/api.ts` with auth token management
-- [ ] **T030** [P] [FOUND] Configure react-i18next in `frontend/src/services/i18n.ts` with EN/CN locale files
-- [ ] **T031** [P] [FOUND] Create translation files `frontend/src/locales/en-US.json` and `frontend/src/locales/zh-CN.json` (common strings)
-- [ ] **T032** [P] [FOUND] Create base UI components: `frontend/src/components/Layout.tsx`, `frontend/src/components/Header.tsx`, `frontend/src/components/Sidebar.tsx`
-- [ ] **T033** [FOUND] Run initial database migration and seed default owner account + configuration via `backend/src/db/init_default_data.py`
-- [ ] **T034** [P] [FOUND] Write unit tests for auth utilities achieving >= 80% coverage in `backend/tests/unit/test_auth.py`
-- [ ] **T035** [P] [FOUND] Write unit tests for all models with validation rules in `backend/tests/unit/models/test_*.py`
-- [ ] **T036** [FOUND] Verify foundation: Run all tests, confirm >= 80% coverage, start backend + frontend, verify health endpoint responds
+- [X] **T011** [FOUND] Setup Alembic migrations framework in `backend/src/db/` with initial migration script
+- [X] **T012** [FOUND] Create TimescaleDB hypertable configuration in initial migration (`backend/src/db/migrations/versions/001_initial_schema.py`)
+- [X] **T013** [P] [FOUND] Implement User model in `backend/src/models/user.py` with SQLAlchemy (username, password_hash, role enum, language_preference)
+- [X] **T014** [P] [FOUND] Implement Device model in `backend/src/models/device.py` with Modbus fields per data-model.md
+- [X] **T015** [P] [FOUND] Implement Reading model (TimescaleDB hypertable) in `backend/src/models/reading.py`
+- [X] **T016** [P] [FOUND] Implement Group model in `backend/src/models/group.py`
+- [X] **T017** [P] [FOUND] Implement DeviceGroup association model in `backend/src/models/device_group.py`
+- [X] **T018** [P] [FOUND] Implement Configuration singleton model in `backend/src/models/configuration.py`
+- [X] **T019** [FOUND] Create database session manager in `backend/src/db/session.py` with connection pooling
+- [X] **T020** [P] [FOUND] Implement JWT authentication utilities in `backend/src/utils/auth.py` (create_access_token, verify_token, bcrypt helpers)
+- [X] **T021** [P] [FOUND] Implement RBAC decorators in `backend/src/utils/rbac.py` (require_owner, require_admin, require_auth)
+- [X] **T022** [P] [FOUND] Implement structured JSON logging in `backend/src/utils/logging.py` per constitution
+- [X] **T023** [P] [FOUND] Create Pydantic request/response schemas in `backend/src/api/schemas.py` (UserSchema, DeviceSchema, ReadingSchema, GroupSchema, ConfigurationSchema per OpenAPI spec)
+- [X] **T024** [FOUND] Setup FastAPI app in `backend/src/main.py` with middleware (CORS, exception handlers, request logging)
+- [X] **T025** [P] [FOUND] Create base API router structure in `backend/src/api/routes.py`
+- [X] **T026** [P] [FOUND] Implement error response schemas and handlers in `backend/src/api/errors.py`
+- [X] **T027** [P] [FOUND] Create Prometheus metrics exporter in `backend/src/utils/metrics.py` (device_readings_total, api_request_duration_seconds, etc.)
+- [X] **T028** [P] [FOUND] Setup React Router and base layout in `frontend/src/App.tsx`
+- [X] **T029** [P] [FOUND] Create API client service in `frontend/src/services/api.ts` with auth token management
+- [X] **T030** [P] [FOUND] Configure react-i18next in `frontend/src/services/i18n.ts` with EN/CN locale files
+- [X] **T031** [P] [FOUND] Create translation files `frontend/src/locales/en-US.json` and `frontend/src/locales/zh-CN.json` (common strings)
+- [X] **T032** [P] [FOUND] Create base UI components: `frontend/src/components/Layout.tsx`, `frontend/src/components/Header.tsx`, `frontend/src/components/Sidebar.tsx`
+- [X] **T033** [FOUND] Run initial database migration and seed default owner account + configuration via `backend/src/db/init_default_data.py`
+- [X] **T034** [P] [FOUND] Write unit tests for auth utilities achieving >= 80% coverage in `backend/tests/unit/test_auth.py`
+- [X] **T035** [P] [FOUND] Write unit tests for all models with validation rules in `backend/tests/unit/models/test_*.py`
+- [X] **T036** [FOUND] Verify foundation: Run all tests, confirm >= 80% coverage, start backend + frontend, verify health endpoint responds
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -83,27 +83,27 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation (TDD per constitution)**
 
-- [ ] **T037** [P] [US1] Contract test for GET `/api/devices/{device_id}/latest` in `backend/tests/contract/test_readings_api.py`
-- [ ] **T038** [P] [US1] Contract test for GET `/api/devices/stream` (SSE) in `backend/tests/contract/test_device_stream.py`
-- [ ] **T039** [P] [US1] Integration test for device status calculation (normal/warning/critical) in `backend/tests/integration/test_device_status.py`
-- [ ] **T040** [P] [US1] E2E test for dashboard load and real-time updates in `frontend/tests/e2e/dashboard.spec.ts`
+- [X] **T037** [P] [US1] Contract test for GET `/api/devices/{device_id}/latest` in `backend/tests/contract/test_readings_api.py`
+- [X] **T038** [P] [US1] Contract test for GET `/api/devices/stream` (SSE) in `backend/tests/contract/test_device_stream.py`
+- [X] **T039** [P] [US1] Integration test for device status calculation (normal/warning/critical) in `backend/tests/integration/test_device_status.py`
+- [X] **T040** [P] [US1] E2E test for dashboard load and real-time updates in `frontend/tests/e2e/dashboard.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] **T041** [US1] Implement `get_device_status()` service logic in `backend/src/services/device_service.py` (calculate status from latest reading vs thresholds with hysteresis)
-- [ ] **T042** [US1] Implement GET `/api/devices/{device_id}/latest` endpoint in `backend/src/api/devices.py` returning Reading with status
-- [ ] **T043** [US1] Implement SSE endpoint GET `/api/devices/stream` in `backend/src/api/devices.py` with EventSource streaming per research.md
-- [ ] **T044** [P] [US1] Create DeviceCard component in `frontend/src/components/DeviceCard.tsx` with status color coding (green/yellow/red)
-- [ ] **T045** [P] [US1] Create Chart component wrapper in `frontend/src/components/Chart.tsx` using ECharts with threshold lines overlay
-- [ ] **T046** [P] [US1] Create AlertBanner component in `frontend/src/components/AlertBanner.tsx` for connection failure notifications
-- [ ] **T047** [US1] Implement SSE client in `frontend/src/services/sse.ts` with auto-reconnect (3 attempts, fallback to polling)
-- [ ] **T048** [US1] Create Dashboard page in `frontend/src/pages/Dashboard.tsx` integrating DeviceCard + Chart + real-time SSE updates
-- [ ] **T049** [US1] Add dashboard route to React Router in `frontend/src/App.tsx`
-- [ ] **T050** [US1] Implement tooltip logic in Chart component showing exact value, unit, timestamp on hover (FR-017)
-- [ ] **T051** [P] [US1] Write unit tests for device_service.get_device_status() >= 80% coverage in `backend/tests/unit/services/test_device_service.py`
-- [ ] **T052** [P] [US1] Write unit tests for DeviceCard component in `frontend/tests/unit/DeviceCard.test.tsx`
-- [ ] **T053** [P] [US1] Write unit tests for Chart component in `frontend/tests/unit/Chart.test.tsx`
-- [ ] **T054** [US1] Add translations for dashboard UI in `frontend/src/locales/en-US.json` and `zh-CN.json` (labels, status text, tooltips)
+- [X] **T041** [US1] Implement `get_device_status()` service logic in `backend/src/services/device_service.py` (calculate status from latest reading vs thresholds with hysteresis)
+- [X] **T042** [US1] Implement GET `/api/devices/{device_id}/latest` endpoint in `backend/src/api/devices.py` returning Reading with status
+- [X] **T043** [US1] Implement SSE endpoint GET `/api/devices/stream` in `backend/src/api/devices.py` with EventSource streaming per research.md
+- [X] **T044** [P] [US1] Create DeviceCard component in `frontend/src/components/DeviceCard.tsx` with status color coding (green/yellow/red)
+- [X] **T045** [P] [US1] Create Chart component wrapper in `frontend/src/components/Chart.tsx` using ECharts with threshold lines overlay
+- [X] **T046** [P] [US1] Create AlertBanner component in `frontend/src/components/AlertBanner.tsx` for connection failure notifications
+- [X] **T047** [US1] Implement SSE client in `frontend/src/services/sse.ts` with auto-reconnect (3 attempts, fallback to polling)
+- [X] **T048** [US1] Create Dashboard page in `frontend/src/pages/Dashboard.tsx` integrating DeviceCard + Chart + real-time SSE updates
+- [X] **T049** [US1] Add dashboard route to React Router in `frontend/src/App.tsx`
+- [X] **T050** [US1] Implement tooltip logic in Chart component showing exact value, unit, timestamp on hover (FR-017)
+- [X] **T051** [P] [US1] Write unit tests for device_service.get_device_status() >= 80% coverage in `backend/tests/unit/services/test_device_service.py`
+- [X] **T052** [P] [US1] Write unit tests for DeviceCard component in `frontend/tests/unit/DeviceCard.test.tsx`
+- [X] **T053** [P] [US1] Write unit tests for Chart component in `frontend/tests/unit/Chart.test.tsx`
+- [X] **T054** [US1] Add translations for dashboard UI in `frontend/src/locales/en-US.json` and `zh-CN.json` (labels, status text, tooltips)
 
 **Checkpoint**: User Story 1 complete - dashboard displays real-time device data with color-coded alerts and auto-refresh
 
