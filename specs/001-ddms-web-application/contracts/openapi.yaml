@@ -1,0 +1,1146 @@
+openapi: 3.1.0
+info:
+  title: DDMS Web Application API
+  version: 1.0.0
+  description: |
+    Device Data Monitoring System (DDMS) REST API for industrial Modbus device monitoring.
+    
+    Supports real-time data collection, historical analysis, threshold alerting, device configuration,
+    user management with RBAC, and multi-language support (EN/CN).
+    
+    Authentication: JWT access tokens in HTTP-only cookies with refresh token rotation.
+  contact:
+    name: DDMS Support
+  license:
+    name: Proprietary
+
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+  - url: https://ddms.local/api
+    description: Production (on-premises)
+
+tags:
+  - name: auth
+    description: Authentication and session management
+  - name: users
+    description: User account management (owner/admin only)
+  - name: devices
+    description: Device configuration and monitoring
+  - name: readings
+    description: Time-series data queries
+  - name: groups
+    description: Device grouping and group dashboards
+  - name: export
+    description: Data export (CSV)
+  - name: system
+    description: System configuration and health
+
+security:
+  - cookieAuth: []
+
+paths:
+  # ============================================================================
+  # Authentication
+  # ============================================================================
+  
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: User login
+      description: Authenticate user and issue JWT access + refresh tokens
+      security: []  # No auth required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        '200':
+          description: Login successful
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: HTTP-only cookie with refresh token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token (15 min expiry)
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          description: Too many failed login attempts (rate limited)
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: User logout
+      description: Invalidate refresh token and clear session
+      responses:
+        '204':
+          description: Logout successful
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: Refresh access token
+      description: Exchange refresh token for new access token
+      security: []  # Uses refresh token from cookie
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/change-password:
+    post:
+      tags: [auth]
+      summary: Change user password
+      description: Update current user's password (FR-002, FR-004)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, new_password]
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+                  minLength: 8
+      responses:
+        '204':
+          description: Password changed successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============================================================================
+  # Users
+  # ============================================================================
+
+  /users:
+    get:
+      tags: [users]
+      summary: List all users
+      description: Get all user accounts (owner/admin only, FR-003)
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: User list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [users]
+      summary: Create new user
+      description: Create admin or read-only user account (owner only, FR-003)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password, role]
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                password:
+                  type: string
+                  minLength: 8
+                role:
+                  type: string
+                  enum: [admin, read_only]
+                language_preference:
+                  type: string
+                  enum: [en-US, zh-CN]
+                  default: en-US
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Username already exists
+
+  /users/{user_id}:
+    get:
+      tags: [users]
+      summary: Get user by ID
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [users]
+      summary: Delete user
+      description: Delete user account (owner only, cannot delete owner, FR-004)
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      responses:
+        '204':
+          description: User deleted
+        '400':
+          description: Cannot delete owner account
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================================================
+  # Devices
+  # ============================================================================
+
+  /devices:
+    get:
+      tags: [devices]
+      summary: List all devices
+      description: Get all configured monitoring devices (FR-007)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [online, offline, error]
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: Device list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  devices:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Device'
+                  total:
+                    type: integer
+
+    post:
+      tags: [devices]
+      summary: Create new device
+      description: Configure new Modbus monitoring device (admin/owner only, FR-023)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreate'
+      responses:
+        '201':
+          description: Device created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Device name already exists (FR-025a)
+
+  /devices/{device_id}:
+    get:
+      tags: [devices]
+      summary: Get device details
+      parameters:
+        - $ref: '#/components/parameters/DeviceIdParam'
+      responses:
+        '200':
+          description: Device details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [devices]
+      summary: Update device configuration
+      description: Update device settings (admin/owner only, FR-023-030)
+      parameters:
+        - $ref: '#/components/parameters/DeviceIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdate'
+      responses:
+        '200':
+          description: Device updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [devices]
+      summary: Delete device
+      description: Delete device with option to keep historical data (admin/owner only, FR-031)
+      parameters:
+        - $ref: '#/components/parameters/DeviceIdParam'
+        - name: keep_data
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Keep historical readings after device deletion
+      responses:
+        '204':
+          description: Device deleted
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /devices/stream:
+    get:
+      tags: [devices]
+      summary: Real-time device data stream (SSE)
+      description: Server-Sent Events stream for real-time dashboard updates (FR-009)
+      parameters:
+        - name: device_ids
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          description: Filter specific devices (comma-separated), or all if omitted
+      responses:
+        '200':
+          description: SSE stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Event format:
+                  data: {"device_id": "uuid", "device_name": "name", "value": 123.45, "timestamp": "ISO8601", "status": "normal|warning|critical"}
+
+  # ============================================================================
+  # Readings
+  # ============================================================================
+
+  /readings/{device_id}:
+    get:
+      tags: [readings]
+      summary: Get device readings (historical or current)
+      description: Query time-series data for a device (FR-018-022)
+      parameters:
+        - $ref: '#/components/parameters/DeviceIdParam'
+        - name: start_time
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Start of time range (ISO 8601), default = 24h ago
+        - name: end_time
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: End of time range (ISO 8601), default = now
+        - name: aggregate
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [raw, 1min, 1hour, 1day]
+            default: raw
+          description: Aggregation level (uses continuous aggregates for performance)
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: Reading data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  device_id:
+                    type: string
+                    format: uuid
+                  device_name:
+                    type: string
+                  readings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reading'
+                  count:
+                    type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /readings/{device_id}/latest:
+    get:
+      tags: [readings]
+      summary: Get latest reading for device
+      description: Get most recent data point (for dashboard, FR-007)
+      parameters:
+        - $ref: '#/components/parameters/DeviceIdParam'
+      responses:
+        '200':
+          description: Latest reading
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reading'
+        '404':
+          description: Device not found or no readings yet
+
+  # ============================================================================
+  # Groups
+  # ============================================================================
+
+  /groups:
+    get:
+      tags: [groups]
+      summary: List all groups
+      description: Get all device groups (FR-035)
+      responses:
+        '200':
+          description: Group list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Group'
+
+    post:
+      tags: [groups]
+      summary: Create new group
+      description: Create device group (admin/owner only, FR-035)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                description:
+                  type: string
+                device_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: Group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Group name already exists
+
+  /groups/{group_id}:
+    get:
+      tags: [groups]
+      summary: Get group details with devices
+      parameters:
+        - $ref: '#/components/parameters/GroupIdParam'
+      responses:
+        '200':
+          description: Group details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupWithDevices'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [groups]
+      summary: Update group
+      description: Rename group or update device membership (admin/owner only, FR-036, FR-037)
+      parameters:
+        - $ref: '#/components/parameters/GroupIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                device_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Group updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [groups]
+      summary: Delete group
+      description: Delete group (does not affect device configurations, FR-037)
+      parameters:
+        - $ref: '#/components/parameters/GroupIdParam'
+      responses:
+        '204':
+          description: Group deleted
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /groups/{group_id}/readings:
+    get:
+      tags: [groups]
+      summary: Get aggregated group readings
+      description: Historical data for all devices in group with timestamp alignment (FR-039, FR-041)
+      parameters:
+        - $ref: '#/components/parameters/GroupIdParam'
+        - name: start_time
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: aggregate
+          in: query
+          schema:
+            type: string
+            enum: [1min, 1hour, 1day]
+            default: 1min
+      responses:
+        '200':
+          description: Group readings (timestamp-aligned)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  group_id:
+                    type: string
+                    format: uuid
+                  group_name:
+                    type: string
+                  devices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        device_id:
+                          type: string
+                          format: uuid
+                        device_name:
+                          type: string
+                        readings:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Reading'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================================================
+  # Export
+  # ============================================================================
+
+  /export/device/{device_id}:
+    get:
+      tags: [export]
+      summary: Export device data to CSV
+      description: Download historical data as CSV file (FR-021)
+      parameters:
+        - $ref: '#/components/parameters/DeviceIdParam'
+        - name: start_time
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: |
+                  CSV format:
+                  timestamp,value,unit,quality
+                  2025-10-10T12:00:00Z,123.45,°C,good
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: 'attachment; filename="device_name_YYYYMMDD_YYYYMMDD.csv"'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /export/group/{group_id}:
+    get:
+      tags: [export]
+      summary: Export group data to CSV
+      description: Download multi-device CSV with timestamp alignment (FR-041)
+      parameters:
+        - $ref: '#/components/parameters/GroupIdParam'
+        - name: start_time
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: |
+                  CSV format:
+                  timestamp,device1_value,device1_unit,device2_value,device2_unit,...
+                  2025-10-10T12:00:00Z,123.45,°C,98.2,bar,...
+
+  # ============================================================================
+  # System
+  # ============================================================================
+
+  /system/config:
+    get:
+      tags: [system]
+      summary: Get system configuration
+      description: Get current system settings (admin/owner only)
+      responses:
+        '200':
+          description: Configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    put:
+      tags: [system]
+      summary: Update system configuration
+      description: Update system settings (owner only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigurationUpdate'
+      responses:
+        '200':
+          description: Configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /system/health:
+    get:
+      tags: [system]
+      summary: System health check
+      description: Health status for monitoring and load balancers
+      security: []  # No auth required
+      responses:
+        '200':
+          description: System healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                  database:
+                    type: string
+                    enum: [connected, disconnected]
+                  devices_online:
+                    type: integer
+                  devices_total:
+                    type: integer
+                  uptime_seconds:
+                    type: integer
+                  version:
+                    type: string
+
+# ==============================================================================
+# Components
+# ==============================================================================
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: refresh_token
+      description: JWT refresh token in HTTP-only cookie
+
+  parameters:
+    UserIdParam:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    DeviceIdParam:
+      name: device_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    GroupIdParam:
+      name: group_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    PageSizeParam:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        role:
+          type: string
+          enum: [owner, admin, read_only]
+        language_preference:
+          type: string
+          enum: [en-US, zh-CN]
+        created_at:
+          type: string
+          format: date-time
+      required: [id, username, role, language_preference, created_at]
+
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        connection_type:
+          type: string
+          enum: [modbus_tcp, modbus_rtu]
+        ip_address:
+          type: string
+          nullable: true
+        port:
+          type: integer
+          nullable: true
+        register_address:
+          type: integer
+        data_type:
+          type: string
+          enum: [INT16, UINT16, INT32, UINT32, FLOAT32]
+        unit:
+          type: string
+        sampling_interval:
+          type: integer
+          description: Seconds between readings (default 10)
+        retention_days:
+          type: integer
+          description: Data retention period (default 90)
+        thresholds:
+          type: object
+          properties:
+            warning_lower:
+              type: number
+              nullable: true
+            warning_upper:
+              type: number
+              nullable: true
+            critical_lower:
+              type: number
+              nullable: true
+            critical_upper:
+              type: number
+              nullable: true
+            hysteresis:
+              type: number
+        status:
+          type: string
+          enum: [online, offline, error]
+        last_reading_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_error:
+          type: string
+          nullable: true
+        error_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DeviceCreate:
+      type: object
+      required: [name, connection_type, register_address, data_type, unit]
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+        description:
+          type: string
+        connection_type:
+          type: string
+          enum: [modbus_tcp, modbus_rtu]
+        ip_address:
+          type: string
+          description: Required for modbus_tcp
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+          default: 502
+        register_address:
+          type: integer
+          minimum: 0
+          maximum: 65535
+        data_type:
+          type: string
+          enum: [INT16, UINT16, INT32, UINT32, FLOAT32]
+        unit:
+          type: string
+          maxLength: 20
+        sampling_interval:
+          type: integer
+          minimum: 5
+          maximum: 3600
+          default: 10
+        retention_days:
+          type: integer
+          minimum: 1
+          maximum: 3650
+          default: 90
+        thresholds:
+          type: object
+          properties:
+            warning_lower:
+              type: number
+            warning_upper:
+              type: number
+            critical_lower:
+              type: number
+            critical_upper:
+              type: number
+            hysteresis:
+              type: number
+              minimum: 0
+              default: 0
+
+    DeviceUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        ip_address:
+          type: string
+        port:
+          type: integer
+        register_address:
+          type: integer
+        data_type:
+          type: string
+          enum: [INT16, UINT16, INT32, UINT32, FLOAT32]
+        unit:
+          type: string
+        sampling_interval:
+          type: integer
+        retention_days:
+          type: integer
+        thresholds:
+          type: object
+
+    Reading:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        device_id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        value:
+          type: number
+        quality:
+          type: string
+          enum: [good, bad, uncertain]
+
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        device_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    GroupWithDevices:
+      allOf:
+        - $ref: '#/components/schemas/Group'
+        - type: object
+          properties:
+            devices:
+              type: array
+              items:
+                $ref: '#/components/schemas/Device'
+            alert_summary:
+              type: object
+              properties:
+                normal:
+                  type: integer
+                warning:
+                  type: integer
+                critical:
+                  type: integer
+                offline:
+                  type: integer
+
+    Configuration:
+      type: object
+      properties:
+        backup_schedule_cron:
+          type: string
+        default_sampling_interval:
+          type: integer
+        default_retention_days:
+          type: integer
+        session_timeout_minutes:
+          type: integer
+        max_login_attempts:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+
+    ConfigurationUpdate:
+      type: object
+      properties:
+        backup_schedule_cron:
+          type: string
+        default_sampling_interval:
+          type: integer
+          minimum: 5
+          maximum: 3600
+        default_retention_days:
+          type: integer
+          minimum: 1
+          maximum: 3650
+        session_timeout_minutes:
+          type: integer
+          minimum: 5
+          maximum: 1440
+        max_login_attempts:
+          type: integer
+          minimum: 1
+          maximum: 20
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code or type
+        message:
+          type: string
+          description: Human-readable error message (localized)
+        details:
+          type: object
+          description: Additional error context
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters or validation failure
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Authentication required or invalid credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Insufficient permissions for requested action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Requested resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
