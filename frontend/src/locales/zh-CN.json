@@ -224,5 +224,36 @@
       "criticalLowerInvalid": "严重下限阈值必须小于警告下限阈值",
       "criticalUpperInvalid": "严重上限阈值必须大于警告上限阈值"
     }
+  },
+  "historical": {
+    "title": "历史数据分析",
+    "description": "查看和分析历史设备数据，支持自定义时间范围",
+    "selectDevice": "选择设备",
+    "selectDevicePlaceholder": "-- 选择设备 --",
+    "selectDeviceToStart": "选择设备以查看历史数据",
+    "selectTimeRange": "选择时间范围以查看数据",
+    "timeRange": "时间范围",
+    "lastHour": "最近一小时",
+    "last24Hours": "最近 24 小时",
+    "last7Days": "最近 7 天",
+    "last30Days": "最近 30 天",
+    "custom": "自定义",
+    "customRange": "{{start}} - {{end}}",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "apply": "应用",
+    "selectBothDates": "请选择开始和结束日期",
+    "invalidDateRange": "开始日期必须早于结束日期",
+    "zoom": "缩放",
+    "resetZoom": "重置缩放",
+    "restore": "恢复",
+    "dataPoints": "{{count}} 个数据点",
+    "exporting": "导出中...",
+    "exportFailed": "导出数据失败",
+    "deviceNotFound": "设备未找到",
+    "fetchDevicesFailed": "加载设备列表失败",
+    "fetchDataFailed": "加载数据失败",
+    "noData": "所选时间范围内无数据",
+    "noDataAvailable": "所选时间范围内无可用数据"
   }
 }
