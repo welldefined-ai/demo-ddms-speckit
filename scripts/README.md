@@ -11,17 +11,21 @@ The `modbus_simulator.py` script simulates a Modbus TCP device for testing DDMS 
 
 ### Prerequisites
 
+**Python 3.11+** and **pymodbus 3.x** are required.
+
 Install pymodbus:
 ```bash
-pip install pymodbus
+pip install 'pymodbus>=3.0'
 ```
 
 Or if using the backend virtual environment:
 ```bash
 cd backend
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install pymodbus
+pip install 'pymodbus>=3.0'
 ```
+
+**Note:** The simulator requires pymodbus 3.x to match the backend's version (3.5.4).
 
 ### Quick Start
 
