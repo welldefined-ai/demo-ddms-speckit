@@ -20,6 +20,7 @@ from src.api.errors import (
 from src.db.session import init_db
 from src.utils.logging import get_logger, setup_logging
 from src.utils.metrics import get_metrics, record_api_request, set_system_health
+from src.collectors.device_manager import device_manager
 
 # Setup logging
 log_level = os.environ.get("LOG_LEVEL", "INFO")
@@ -40,8 +41,12 @@ async def lifespan(app: FastAPI):
         init_db()
         set_system_health(True)
         logger.info("Database connection initialized successfully")
+
+        # Start device manager for data collection
+        await device_manager.start()
+        logger.info("Device manager started successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize database: {e}")
+        logger.error(f"Failed to initialize application: {e}")
         set_system_health(False)
         raise
 
@@ -49,6 +54,8 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     logger.info("Shutting down DDMS application")
+    await device_manager.stop()
+    logger.info("Device manager stopped")
 
 
 # Create FastAPI application

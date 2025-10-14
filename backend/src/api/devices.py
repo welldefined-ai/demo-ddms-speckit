@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 from src.db.session import get_db
 from src.services import device_service
+from src.services.device_service import get_latest_reading_with_status
 from src.models.device import Device, DeviceStatus
 from src.utils.logging import get_logger
 from src.utils.rbac import require_admin

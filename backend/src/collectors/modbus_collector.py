@@ -108,7 +108,7 @@ class ModbusCollector:
                 result = await self.client.read_holding_registers(
                     address=register,
                     count=count,
-                    slave=slave_id
+                    device_id=slave_id
                 )
 
                 if result.isError():
