@@ -4,6 +4,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import './Header.css';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
