@@ -153,6 +153,7 @@ const UserManagement: React.FC = () => {
 
       setSuccessMessage(
         t('userManagement.userCreated', {
+          username: formData.username,
           defaultValue: `User ${formData.username} created successfully`,
         })
       );
@@ -198,6 +199,7 @@ const UserManagement: React.FC = () => {
 
     const confirmDelete = window.confirm(
       t('userManagement.confirmDelete', {
+        username: username,
         defaultValue: `Are you sure you want to delete user ${username}?`,
       })
     );
@@ -210,6 +212,7 @@ const UserManagement: React.FC = () => {
       await api.deleteUser(userId);
       setSuccessMessage(
         t('userManagement.userDeleted', {
+          username: username,
           defaultValue: `User ${username} deleted successfully`,
         })
       );
