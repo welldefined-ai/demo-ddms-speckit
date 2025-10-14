@@ -32,12 +32,14 @@ const DeviceList: React.FC<DeviceListProps> = ({
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { class: string; label: string }> = {
+      online: { class: 'status-connected', label: t('deviceList.statusConnected') },
       connected: { class: 'status-connected', label: t('deviceList.statusConnected') },
+      offline: { class: 'status-disconnected', label: t('deviceList.statusDisconnected') },
       disconnected: { class: 'status-disconnected', label: t('deviceList.statusDisconnected') },
       error: { class: 'status-error', label: t('deviceList.statusError') }
     };
 
-    const statusInfo = statusMap[status.toLowerCase()] || statusMap.disconnected;
+    const statusInfo = statusMap[status.toLowerCase()] || statusMap.offline;
     return <span className={`status-badge ${statusInfo.class}`}>{statusInfo.label}</span>;
   };
 

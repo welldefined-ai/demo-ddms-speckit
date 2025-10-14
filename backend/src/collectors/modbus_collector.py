@@ -2,6 +2,7 @@
 Modbus collector for reading data from Modbus TCP devices
 """
 import asyncio
+import struct
 from typing import Optional
 from datetime import datetime
 from pymodbus.client import AsyncModbusTcpClient
@@ -181,13 +182,23 @@ class ModbusCollector:
             return None
 
         # Convert register(s) to value
-        # For single register: just the value
-        # For multiple registers: combine them (implementation depends on device)
         if count == 1:
+            # Single register: direct integer value
             raw_value = registers[0]
+        elif count == 2:
+            # Two registers: decode as IEEE 754 32-bit float (big-endian)
+            # Modbus stores data as 16-bit words, combine into 32-bit float
+            try:
+                # Pack two 16-bit registers into 4 bytes
+                bytes_val = struct.pack('>HH', registers[0], registers[1])
+                # Unpack as 32-bit float
+                raw_value = struct.unpack('>f', bytes_val)[0]
+            except struct.error as e:
+                logger.error(f"Failed to decode IEEE 754 float from registers {registers}: {e}")
+                return None
         else:
-            # For multiple registers, this is a simple implementation
-            # Real implementation may need to handle different data types
+            # Multiple registers: sum them (for devices that use additive values)
+            # This is a fallback for other data formats
             raw_value = sum(registers)
 
         # Apply scaling
