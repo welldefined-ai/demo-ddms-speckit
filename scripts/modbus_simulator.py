@@ -35,42 +35,17 @@ import struct
 import threading
 
 try:
-    # Try pymodbus 3.x API first
     from pymodbus.server import StartTcpServer
     from pymodbus.datastore import (
         ModbusSequentialDataBlock,
+        ModbusDeviceContext,
         ModbusServerContext
     )
-    # In pymodbus 3.x, ModbusSlaveContext is now ModbusDeviceContext
-    try:
-        from pymodbus.datastore import ModbusSlaveContext
-    except ImportError:
-        from pymodbus.datastore import ModbusDeviceContext as ModbusSlaveContext
-
-    PYMODBUS_V3 = True
-    # Device identification is optional in v3
-    try:
-        from pymodbus.device import ModbusDeviceIdentification
-        HAS_DEVICE_ID = True
-    except ImportError:
-        HAS_DEVICE_ID = False
 except ImportError as e:
-    # Fall back to pymodbus 2.x API
-    try:
-        from pymodbus.server.sync import StartTcpServer
-        from pymodbus.device import ModbusDeviceIdentification
-        from pymodbus.datastore import (
-            ModbusSequentialDataBlock,
-            ModbusSlaveContext,
-            ModbusServerContext
-        )
-        PYMODBUS_V3 = False
-        HAS_DEVICE_ID = True
-    except ImportError as e2:
-        print(f"Error: pymodbus is not installed or version is incompatible")
-        print(f"Please install pymodbus: pip install pymodbus")
-        print(f"Details: {e2}")
-        exit(1)
+    print("Error: pymodbus 3.x is required but not installed")
+    print("Please install: pip install 'pymodbus>=3.0'")
+    print(f"Details: {e}")
+    exit(1)
 
 # Configure logging
 logging.basicConfig(
@@ -187,31 +162,15 @@ def run_server(port=5020, slave_id=1):
 
     # Initialize data store with 100 registers
     # Holding registers (function code 3)
-    store = ModbusSlaveContext(
+    store = ModbusDeviceContext(
         di=ModbusSequentialDataBlock(0, [0]*100),  # Discrete Inputs
         co=ModbusSequentialDataBlock(0, [0]*100),  # Coils
         hr=ModbusSequentialDataBlock(0, [0]*100),  # Holding Registers
         ir=ModbusSequentialDataBlock(0, [0]*100),  # Input Registers
     )
 
-    # Create server context - API differs between versions
-    if PYMODBUS_V3:
-        # pymodbus 3.x uses 'devices' parameter
-        context = ModbusServerContext(devices={slave_id: store}, single=False)
-    else:
-        # pymodbus 2.x uses 'slaves' parameter
-        context = ModbusServerContext(slaves={slave_id: store}, single=False)
-
-    # Device identification (optional)
-    identity = None
-    if HAS_DEVICE_ID:
-        identity = ModbusDeviceIdentification()
-        identity.VendorName = 'DDMS Simulator'
-        identity.ProductCode = 'DDMS-SIM'
-        identity.VendorUrl = 'http://localhost'
-        identity.ProductName = 'DDMS Test Device Simulator'
-        identity.ModelName = 'Temperature/Pressure/Flow Sensor'
-        identity.MajorMinorRevision = '1.0.0'
+    # Create server context (pymodbus 3.x uses 'devices' parameter)
+    context = ModbusServerContext(devices={slave_id: store}, single=False)
 
     # Start background updater
     update_registers_callback(context, slave_id)
@@ -220,7 +179,6 @@ def run_server(port=5020, slave_id=1):
     logger.info("=" * 70)
     logger.info("DDMS Modbus TCP Simulator Started")
     logger.info("=" * 70)
-    logger.info(f"PyModbus Version: {'3.x' if PYMODBUS_V3 else '2.x'}")
     logger.info(f"Listening on: 127.0.0.1:{port}")
     logger.info(f"Slave ID: {slave_id}")
     logger.info("")
@@ -244,32 +202,10 @@ def run_server(port=5020, slave_id=1):
     logger.info("")
 
     try:
-        if PYMODBUS_V3:
-            # pymodbus 3.x API
-            if identity:
-                StartTcpServer(
-                    context=context,
-                    identity=identity,
-                    address=("127.0.0.1", port)
-                )
-            else:
-                StartTcpServer(
-                    context=context,
-                    address=("127.0.0.1", port)
-                )
-        else:
-            # pymodbus 2.x API
-            if identity:
-                StartTcpServer(
-                    context,
-                    identity=identity,
-                    address=("127.0.0.1", port)
-                )
-            else:
-                StartTcpServer(
-                    context,
-                    address=("127.0.0.1", port)
-                )
+        StartTcpServer(
+            context=context,
+            address=("127.0.0.1", port)
+        )
     except KeyboardInterrupt:
         logger.info("\nShutting down simulator...")
 
