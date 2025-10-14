@@ -63,8 +63,7 @@ const GroupList: React.FC<GroupListProps> = ({
                 onClick={() => handleViewGroup(group.id)}
                 title={t('groups.viewGroup')}
               >
-                <span className="icon">👁️</span>
-                {t('groups.viewGroup')}
+                {t('common.view', { defaultValue: 'View' })}
               </button>
               {canEdit && onEdit && (
                 <button
@@ -72,7 +71,7 @@ const GroupList: React.FC<GroupListProps> = ({
                   onClick={() => onEdit(group.id)}
                   title={t('groups.editGroup')}
                 >
-                  <span className="icon">✏️</span>
+                  ✏️
                 </button>
               )}
               {canEdit && onDelete && (
@@ -81,7 +80,7 @@ const GroupList: React.FC<GroupListProps> = ({
                   onClick={() => onDelete(group.id)}
                   title={t('groups.deleteGroup')}
                 >
-                  <span className="icon">🗑️</span>
+                  🗑️
                 </button>
               )}
             </div>

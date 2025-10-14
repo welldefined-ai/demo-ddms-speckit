@@ -34,13 +34,16 @@
   font-size: var(--text-xl);
   color: var(--text-primary);
   font-weight: var(--font-semibold);
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  max-width: 100%;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  word-break: normal;
   hyphens: auto;
   letter-spacing: -0.025em;
   line-height: 1.3;
+  white-space: normal;
 }
 
 .group-actions {
@@ -80,31 +83,26 @@
   transform: translateY(-1px);
 }
 
-.btn-edit {
+.btn-edit,
+.btn-delete {
+  padding: var(--spacing-sm);
   color: var(--text-secondary);
   background-color: var(--gray-100);
+  min-width: 36px;
+  height: 36px;
+  justify-content: center;
 }
 
 .btn-edit:hover {
   background-color: var(--gray-200);
   color: var(--primary-color);
-  transform: scale(1.05);
-}
-
-.btn-delete {
-  color: var(--text-secondary);
-  background-color: var(--gray-100);
+  transform: scale(1.1);
 }
 
 .btn-delete:hover {
   background-color: var(--error-bg);
   color: var(--error-color);
-  transform: scale(1.05);
-}
-
-.icon {
-  font-size: 1rem;
-  line-height: 1;
+  transform: scale(1.1);
 }
 
 .group-description {
