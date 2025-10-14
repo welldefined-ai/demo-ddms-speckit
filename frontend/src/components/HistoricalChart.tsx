@@ -1,7 +1,7 @@
 /**
  * HistoricalChart component - ECharts with zoom/pan for historical data analysis (User Story 4)
  */
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import * as echarts from 'echarts';
 import { useTranslation } from 'react-i18next';
 
@@ -32,13 +32,18 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
   const { t } = useTranslation();
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<echarts.ECharts | null>(null);
-  const [zoomLevel, setZoomLevel] = useState<{ start: number; end: number }>({ start: 0, end: 100 });
 
   useEffect(() => {
-    if (!chartRef.current) return;
+    console.log('[HistoricalChart] useEffect triggered', { hasRef: !!chartRef.current, hasInstance: !!chartInstance.current, dataLength: data.length });
+
+    if (!chartRef.current) {
+      console.log('[HistoricalChart] No chartRef, returning');
+      return;
+    }
 
     // Initialize chart if not already initialized
     if (!chartInstance.current) {
+      console.log('[HistoricalChart] Initializing ECharts instance');
       chartInstance.current = echarts.init(chartRef.current);
     }
 
@@ -54,16 +59,17 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
     const timestamps = data.map(d => new Date(d.timestamp));
     const values = data.map(d => d.value);
 
+    // Debug logging
+    console.log('[HistoricalChart] Rendering with data:', {
+      dataLength: data.length,
+      firstTimestamp: timestamps[0]?.toISOString(),
+      lastTimestamp: timestamps[timestamps.length - 1]?.toISOString(),
+      valueRange: [Math.min(...values), Math.max(...values)],
+      sampleData: data.slice(0, 3)
+    });
+
     // Chart configuration
     const option: echarts.EChartsOption = {
-      title: {
-        text: deviceName || '',
-        left: 'center',
-        textStyle: {
-          fontSize: 16,
-          fontWeight: 'bold',
-        },
-      },
       tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -93,7 +99,7 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
         left: '3%',
         right: '4%',
         bottom: enableDataZoom ? '15%' : '10%',
-        top: deviceName ? '15%' : '10%',
+        top: '10%',
         containLabel: true,
       },
       toolbox: {
@@ -154,16 +160,16 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
       dataZoom: enableDataZoom ? [
         {
           type: 'inside',
-          start: zoomLevel.start,
-          end: zoomLevel.end,
+          start: 0,
+          end: 100,
           zoomOnMouseWheel: true,
           moveOnMouseMove: true,
           moveOnMouseWheel: false,
         },
         {
           type: 'slider',
-          start: zoomLevel.start,
-          end: zoomLevel.end,
+          start: 0,
+          end: 100,
           height: 30,
           bottom: 20,
         },
@@ -191,39 +197,30 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
     };
 
     chartInstance.current.setOption(option, true);
-
-    // Track zoom changes
-    chartInstance.current.on('datazoom', (event: any) => {
-      if (event.batch && event.batch[0]) {
-        setZoomLevel({
-          start: event.batch[0].start || 0,
-          end: event.batch[0].end || 100,
-        });
-      }
-    });
+    console.log('[HistoricalChart] Chart option set successfully');
 
     // Cleanup on unmount
     return () => {
-      if (chartInstance.current) {
-        chartInstance.current.off('datazoom');
-      }
+      // No cleanup needed for this effect
     };
-  }, [data, unit, deviceName, height, enableZoom, enableDataZoom, loading, t, zoomLevel]);
+  }, [data, unit, deviceName, height, enableZoom, enableDataZoom, loading, t]);
 
-  // Handle window resize
+  // Handle window resize and cleanup on unmount
   useEffect(() => {
     const handleResize = () => {
       chartInstance.current?.resize();
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
-  // Cleanup on component unmount
-  useEffect(() => {
+    // Cleanup function runs ONLY when component unmounts
     return () => {
-      chartInstance.current?.dispose();
+      window.removeEventListener('resize', handleResize);
+      if (chartInstance.current) {
+        console.log('[HistoricalChart] Disposing chart instance on unmount');
+        chartInstance.current.dispose();
+        chartInstance.current = null;
+      }
     };
   }, []);
 

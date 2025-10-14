@@ -77,7 +77,7 @@ def get_device_readings(
         401: Not authenticated
         404: Device not found
     """
-    logger.info(f"Fetching readings for device {device_id} (user: {current_user.username})")
+    logger.info(f"Fetching readings for device {device_id} (user: {current_user['username']})")
 
     # Parse timestamps
     parsed_start_time = None

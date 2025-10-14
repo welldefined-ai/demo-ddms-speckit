@@ -1,7 +1,7 @@
 /**
  * TimeRangePicker component - Select time ranges for historical data (User Story 4)
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface TimeRange {
@@ -32,6 +32,17 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
     { value: '7d', label: t('historical.last7Days', { defaultValue: 'Last 7 Days' }), hours: 7 * 24 },
     { value: '30d', label: t('historical.last30Days', { defaultValue: 'Last 30 Days' }), hours: 30 * 24 },
   ];
+
+  // Automatically trigger the default range on mount
+  useEffect(() => {
+    const defaultRangeConfig = predefinedRanges.find(r => r.value === defaultRange);
+    if (defaultRangeConfig) {
+      const end = new Date();
+      const start = new Date(end.getTime() - defaultRangeConfig.hours * 60 * 60 * 1000);
+      onRangeChange({ start, end, label: defaultRangeConfig.label });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   const handlePredefinedRangeClick = (rangeValue: string, hours: number, label: string) => {
     setSelectedRange(rangeValue);
