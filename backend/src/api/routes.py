@@ -7,6 +7,7 @@ from src.api.auth import router as auth_router
 from src.api.users import router as users_router
 from src.api.readings import router as readings_router
 from src.api.export import router as export_router
+from src.api.groups import router as groups_router
 
 # Create main API router
 api_router = APIRouter(prefix="/api")
@@ -22,8 +23,10 @@ api_router.include_router(users_router)
 api_router.include_router(readings_router)
 api_router.include_router(export_router)
 
+# Include groups routes (User Story 5)
+api_router.include_router(groups_router)
+
 # Placeholder for sub-routers to be added later:
-# - groups_router (GET/POST/PUT/DELETE /api/groups, etc.)
 # - system_router (GET /api/system/health, /api/system/config, etc.)
 
 

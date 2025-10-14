@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from src.db.session import get_db
 from src.services import reading_service
 from src.utils.logging import get_logger
-from src.utils.auth import get_current_user
+from src.api.dependencies import get_current_user
 
 router = APIRouter(prefix="/readings", tags=["Readings"])
 logger = get_logger("ddms.api.readings")

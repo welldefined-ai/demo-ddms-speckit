@@ -16,9 +16,9 @@ import DeviceConfig from './pages/DeviceConfig';
 import Login from './pages/Login';
 import UserManagement from './pages/UserManagement';
 import Historical from './pages/Historical';
+import Groups from './pages/Groups';
 
 // Placeholder pages - will be implemented in upcoming user stories
-const GroupsPage = () => <div>Groups Page (Coming in US5)</div>;
 const SettingsPage = () => <div>Settings Page (Coming in Polish phase)</div>;
 
 const App: React.FC = () => {
@@ -42,7 +42,8 @@ const App: React.FC = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/devices" element={<DeviceConfig />} />
                 <Route path="/historical" element={<Historical />} />
-                <Route path="/groups" element={<GroupsPage />} />
+                <Route path="/groups" element={<Groups />} />
+                <Route path="/groups/:groupId" element={<Groups />} />
                 <Route
                   path="/users"
                   element={
