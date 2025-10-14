@@ -1,86 +1,98 @@
 .group-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  gap: var(--spacing-xl);
+  animation: fadeIn var(--transition-slow) ease-out;
 }
 
 .group-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1.5rem;
-  transition: box-shadow 0.2s, transform 0.2s;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  transition: all var(--transition);
+  cursor: pointer;
 }
 
 .group-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--primary-color);
 }
 
 .group-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
-  gap: 1rem;
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
 }
 
 .group-name {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   flex: 1;
   word-break: break-word;
+  letter-spacing: -0.025em;
 }
 
 .group-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   flex-shrink: 0;
 }
 
 .btn-view,
 .btn-edit,
 .btn-delete {
-  padding: 0.5rem;
+  padding: var(--spacing-sm);
   border: none;
   background: none;
   cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
+  gap: var(--spacing-xs);
+  font-size: var(--text-sm);
 }
 
 .btn-view {
-  color: var(--primary-color);
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-bg);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  font-weight: var(--font-medium);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-view:hover {
-  background-color: var(--primary-hover-bg);
+  background: linear-gradient(135deg, var(--primary-hover), var(--primary-dark));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .btn-edit {
   color: var(--text-secondary);
+  background-color: var(--gray-100);
 }
 
 .btn-edit:hover {
-  background-color: var(--hover-bg);
+  background-color: var(--gray-200);
   color: var(--primary-color);
+  transform: scale(1.05);
 }
 
 .btn-delete {
   color: var(--text-secondary);
+  background-color: var(--gray-100);
 }
 
 .btn-delete:hover {
   background-color: var(--error-bg);
   color: var(--error-color);
+  transform: scale(1.05);
 }
 
 .icon {
@@ -90,56 +102,69 @@
 
 .group-description {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin: 0 0 1rem 0;
-  line-height: 1.5;
+  font-size: var(--text-sm);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: 1.6;
 }
 
 .group-metadata {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+  margin-top: var(--spacing-sm);
 }
 
 .metadata-item {
   display: flex;
   justify-content: space-between;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
+  padding: var(--spacing-xs) 0;
 }
 
 .metadata-label {
   color: var(--text-secondary);
+  font-weight: var(--font-normal);
 }
 
 .metadata-value {
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: var(--font-semibold);
+  background: var(--gray-100);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius);
 }
 
 /* Empty State */
 .empty-state {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: var(--spacing-3xl) var(--spacing-xl);
   color: var(--text-secondary);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border-light);
+  animation: fadeIn var(--transition-slow) ease-out;
 }
 
 .empty-icon {
   font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.3;
+  filter: grayscale(100%);
 }
 
 .empty-state h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 var(--spacing-sm) 0;
   color: var(--text-primary);
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
 }
 
 .empty-state p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--text-base);
+  line-height: 1.6;
 }
 
 /* Responsive */

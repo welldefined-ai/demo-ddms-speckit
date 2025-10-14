@@ -17,9 +17,7 @@ import Login from './pages/Login';
 import UserManagement from './pages/UserManagement';
 import Historical from './pages/Historical';
 import Groups from './pages/Groups';
-
-// Placeholder pages - will be implemented in upcoming user stories
-const SettingsPage = () => <div>Settings Page (Coming in Polish phase)</div>;
+import Settings from './pages/Settings';
 
 const App: React.FC = () => {
   return (
@@ -52,7 +50,7 @@ const App: React.FC = () => {
                     </RoleGuard>
                   }
                 />
-                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/settings" element={<Settings />} />
 
                 {/* Redirect root to dashboard */}
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
