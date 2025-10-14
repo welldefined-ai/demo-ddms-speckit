@@ -67,15 +67,14 @@ const Historical: React.FC = () => {
         const rangeMs = timeRange.end.getTime() - timeRange.start.getTime();
         const oneHour = 60 * 60 * 1000;
         const oneDay = 24 * oneHour;
-        const oneWeek = 7 * oneDay;
 
         let aggregate: string | undefined;
-        if (rangeMs > oneWeek) {
-          aggregate = '1hour'; // For ranges > 1 week, use hourly aggregation
-        } else if (rangeMs > oneDay) {
-          aggregate = '1hour'; // For ranges > 1 day, use hourly aggregation
+        if (rangeMs > 90 * oneDay) {
+          aggregate = '1day'; // For ranges > 90 days, use daily aggregation
+        } else if (rangeMs > 30 * oneDay) {
+          aggregate = '1hour'; // For ranges > 30 days, use hourly aggregation
         }
-        // Otherwise, use raw data
+        // For ranges <= 30 days, use raw data (no aggregation) to preserve all data points
 
         const params: any = {
           start_time: timeRange.start.toISOString(),

@@ -152,25 +152,27 @@ def get_aggregated_readings(
     if start_time and end_time and end_time < start_time:
         raise ValueError("end_time must be after start_time")
 
-    # Map aggregate interval to SQL time format
-    time_format_map = {
-        "1min": "%Y-%m-%d %H:%M:00",
-        "1hour": "%Y-%m-%d %H:00:00",
-        "1day": "%Y-%m-%d",
+    # Map aggregate interval to PostgreSQL date_trunc precision
+    date_trunc_precision_map = {
+        "1min": "minute",
+        "1hour": "hour",
+        "1day": "day",
     }
 
-    if aggregate_interval not in time_format_map:
-        raise ValueError(f"Invalid aggregate_interval. Must be one of: {', '.join(time_format_map.keys())}")
+    if aggregate_interval not in date_trunc_precision_map:
+        raise ValueError(f"Invalid aggregate_interval. Must be one of: {', '.join(date_trunc_precision_map.keys())}")
 
-    time_format = time_format_map[aggregate_interval]
+    precision = date_trunc_precision_map[aggregate_interval]
 
-    # Build aggregation query
+    # Build aggregation query using PostgreSQL's date_trunc
+    time_bucket_expr = func.date_trunc(precision, Reading.timestamp)
+
     query = db.query(
-        func.strftime(time_format, Reading.timestamp).label('time_bucket'),
+        time_bucket_expr.label('time_bucket'),
         func.avg(Reading.value).label('avg_value'),
         func.min(Reading.value).label('min_value'),
         func.max(Reading.value).label('max_value'),
-        func.count(Reading.id).label('count')
+        func.count(Reading.timestamp).label('count')
     ).filter(Reading.device_id == device_id)
 
     # Apply time range filters
@@ -182,8 +184,8 @@ def get_aggregated_readings(
     # Group by time bucket and order descending
     results = (
         query
-        .group_by(func.strftime(time_format, Reading.timestamp))
-        .order_by(desc(func.strftime(time_format, Reading.timestamp)))
+        .group_by(time_bucket_expr)
+        .order_by(desc(time_bucket_expr))
         .limit(limit)
         .offset(offset)
         .all()
@@ -192,7 +194,7 @@ def get_aggregated_readings(
     # Convert to result objects
     aggregated_readings = [
         AggregatedReadingResult(
-            time_bucket=result.time_bucket,
+            time_bucket=result.time_bucket.isoformat() if hasattr(result.time_bucket, 'isoformat') else str(result.time_bucket),
             avg_value=result.avg_value,
             min_value=result.min_value,
             max_value=result.max_value,
@@ -252,7 +254,7 @@ def get_reading_count(
     Returns:
         Count of readings
     """
-    query = db.query(func.count(Reading.id)).filter(Reading.device_id == device_id)
+    query = db.query(func.count(Reading.timestamp)).filter(Reading.device_id == device_id)
 
     if start_time:
         query = query.filter(Reading.timestamp >= start_time)
