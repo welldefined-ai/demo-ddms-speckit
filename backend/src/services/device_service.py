@@ -181,7 +181,7 @@ def create_device(
         threshold_critical_lower=threshold_critical_lower,
         threshold_critical_upper=threshold_critical_upper,
         retention_days=retention_days,
-        status=DeviceStatus.DISCONNECTED
+        status=DeviceStatus.OFFLINE
     )
 
     db.add(device)

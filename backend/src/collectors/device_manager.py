@@ -168,13 +168,12 @@ class DeviceManager:
                     reading = Reading(
                         device_id=device_id,
                         value=value,
-                        timestamp=datetime.utcnow(),
-                        quality_indicator="good"
+                        timestamp=datetime.utcnow()
                     )
                     db.add(reading)
 
                     # Update device status
-                    device.status = DeviceStatus.CONNECTED
+                    device.status = DeviceStatus.ONLINE
                     device.last_reading_at = datetime.utcnow()
                     db.commit()
 
