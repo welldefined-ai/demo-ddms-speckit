@@ -83,7 +83,7 @@ const Groups: React.FC = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_BASE_URL}/api/groups`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -105,7 +105,7 @@ const Groups: React.FC = () => {
 
   const fetchDevices = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_BASE_URL}/api/devices`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -126,7 +126,7 @@ const Groups: React.FC = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_BASE_URL}/api/groups/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -151,7 +151,7 @@ const Groups: React.FC = () => {
 
   const fetchGroupReadings = async (id: string, hours: number = 24) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_BASE_URL}/api/groups/${id}/readings?hours=${hours}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -182,7 +182,7 @@ const Groups: React.FC = () => {
 
     // Fetch group details to populate form
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_BASE_URL}/api/groups/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -212,7 +212,7 @@ const Groups: React.FC = () => {
 
       const method = editingGroupId ? 'PUT' : 'POST';
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(url, {
         method,
         headers: {
@@ -261,7 +261,7 @@ const Groups: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_BASE_URL}/api/groups/${id}`, {
         method: 'DELETE',
         headers: {
@@ -295,7 +295,7 @@ const Groups: React.FC = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_BASE_URL}/api/export/group/${groupId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
