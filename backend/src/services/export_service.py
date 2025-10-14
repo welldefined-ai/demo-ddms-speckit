@@ -229,6 +229,91 @@ def generate_multi_device_csv_export(
     return csv_content, filename
 
 
+def generate_group_csv_export(
+    db: Session,
+    group_id: uuid.UUID,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None
+) -> tuple[Optional[str], Optional[str]]:
+    """
+    Generate CSV export for a device group
+
+    Combines readings from all devices in a group into a single CSV.
+
+    Args:
+        db: Database session
+        group_id: UUID of the group
+        start_time: Optional start timestamp (inclusive)
+        end_time: Optional end timestamp (inclusive)
+
+    Returns:
+        Tuple of (csv_content: str, filename: str) if successful, (None, None) if group not found
+
+    Raises:
+        ValueError: If parameters are invalid
+    """
+    from src.services.group_service import get_group_by_id, get_group_readings
+
+    # Validate group exists
+    group = get_group_by_id(db, group_id)
+    if not group:
+        return None, None
+
+    # Validate time range
+    if start_time and end_time and end_time < start_time:
+        raise ValueError("end_time must be after start_time")
+
+    # Get group readings
+    readings = get_group_readings(
+        db=db,
+        group_id=group_id,
+        start_time=start_time,
+        end_time=end_time,
+        limit=10000  # Large limit for export
+    )
+
+    if not readings:
+        # Return empty CSV if no data
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['timestamp', 'device_name', 'value', 'unit'])
+        csv_content = output.getvalue()
+        output.close()
+
+        sanitized_name = sanitize_filename(group.name)
+        timestamp_str = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        filename = f"{sanitized_name}_{timestamp_str}.csv"
+
+        return csv_content, filename
+
+    # Create CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Write CSV headers
+    writer.writerow(['timestamp', 'device_name', 'value', 'unit'])
+
+    # Write data rows (already in descending order, so reverse for chronological)
+    for reading in reversed(readings):
+        writer.writerow([
+            reading.timestamp.isoformat(),
+            reading.device_name,
+            reading.value,
+            reading.unit
+        ])
+
+    # Get CSV content
+    csv_content = output.getvalue()
+    output.close()
+
+    # Generate filename
+    sanitized_name = sanitize_filename(group.name)
+    timestamp_str = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+    filename = f"{sanitized_name}_{timestamp_str}.csv"
+
+    return csv_content, filename
+
+
 def get_export_filename(device_name: str, extension: str = "csv") -> str:
     """
     Generate a safe export filename for a device

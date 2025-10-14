@@ -3,7 +3,7 @@ User management service for CRUD operations on users (T085)
 """
 import uuid
 import logging
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -244,7 +244,3 @@ def validate_username(username: str) -> Tuple[bool, Optional[str]]:
         return False, "Username can only contain letters, numbers, and underscores"
 
     return True, None
-
-
-# Type import for tuple
-from typing import Tuple
