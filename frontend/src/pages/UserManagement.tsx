@@ -46,6 +46,36 @@ const UserManagement: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // Helper function to translate backend error messages
+  const translateBackendError = (errorMessage: string): string => {
+    const errorMap: Record<string, string> = {
+      'Password must be at least 8 characters long': t('userManagement.passwordTooShort'),
+      'Password must contain at least one uppercase letter': t('userManagement.passwordNeedsUppercase'),
+      'Password must contain at least one lowercase letter': t('userManagement.passwordNeedsLowercase'),
+      'Password must contain at least one digit': t('userManagement.passwordNeedsDigit'),
+      'Password must contain at least one special character': t('userManagement.passwordNeedsSpecial'),
+      'Username is required': t('userManagement.usernameRequired'),
+      'Username must be at least 3 characters long': t('userManagement.usernameTooShort'),
+      'Username must be at most 50 characters long': t('userManagement.usernameTooLong'),
+      'Username can only contain letters, numbers, and underscores': t('userManagement.usernameInvalidChars'),
+      'Cannot create additional owner accounts': t('userManagement.cannotCreateOwner'),
+      "Language preference must be 'en' or 'zh'": t('userManagement.invalidLanguage'),
+    };
+
+    // Check for username exists error (contains dynamic username)
+    if (errorMessage.includes('already exists')) {
+      return t('userManagement.usernameExists');
+    }
+
+    // Check for invalid role error
+    if (errorMessage.includes('Invalid role')) {
+      return t('userManagement.invalidRole');
+    }
+
+    // Return translated message if found, otherwise return original
+    return errorMap[errorMessage] || errorMessage;
+  };
+
   // Get current user role
   const currentUserRole = JSON.parse(localStorage.getItem('user') || '{}').role;
   const isOwner = currentUserRole === 'owner';
@@ -145,11 +175,12 @@ const UserManagement: React.FC = () => {
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err: any) {
       console.error('Failed to create user:', err);
-      const errorMessage =
-        err.response?.data?.detail ||
-        t('userManagement.createError', {
-          defaultValue: 'Failed to create user',
-        });
+      const backendError = err.response?.data?.detail;
+      const errorMessage = backendError
+        ? translateBackendError(backendError)
+        : t('userManagement.createError', {
+            defaultValue: 'Failed to create user',
+          });
       setFormErrors({ general: errorMessage });
     }
   };
