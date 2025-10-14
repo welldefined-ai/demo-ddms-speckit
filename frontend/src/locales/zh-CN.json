@@ -159,7 +159,7 @@
     "minutesAgo": "{{count}} 分钟前",
     "minutesAgo_other": "{{count}} 分钟前",
     "noDevices": "未配置设备",
-    "addDeviceHint": "点击"创建设备"添加您的第一个设备"
+    "addDeviceHint": "点击\"创建设备\"添加您的第一个设备"
   },
   "deviceForm": {
     "titleCreate": "创建新设备",
@@ -275,9 +275,9 @@
     "confirmDelete": "确定要删除分组 '{{name}}' 吗？",
     "confirmDeleteMessage": "分组中的设备不会被删除。",
     "noGroups": "未配置分组",
-    "addGroupHint": "点击"创建分组"添加您的第一个分组",
+    "addGroupHint": "点击\"创建分组\"添加您的第一个分组",
     "noDevicesInGroup": "该分组中没有设备",
-    "addDevicesHint": "点击"编辑分组"添加设备",
+    "addDevicesHint": "点击\"编辑分组\"添加设备",
     "alertSummary": "告警摘要",
     "normalDevices": "正常",
     "warningDevices": "警告",
