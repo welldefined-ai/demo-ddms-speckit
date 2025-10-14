@@ -23,16 +23,22 @@ const Dashboard: React.FC = () => {
   const [connectionState, setConnectionState] = useState<SSEConnectionState>('disconnected');
   const [showConnectionAlert, setShowConnectionAlert] = useState(false);
   const sseClient = useRef<SSEClient | null>(null);
+  const selectedDeviceRef = useRef<DeviceReading | null>(null);
 
-  // Initialize SSE connection
+  // Keep ref in sync with state
+  useEffect(() => {
+    selectedDeviceRef.current = selectedDevice;
+  }, [selectedDevice]);
+
+  // Initialize SSE connection (only once on mount)
   useEffect(() => {
     sseClient.current = new SSEClient({
       onMessage: (data: DeviceReading[]) => {
         setDevices(data);
 
-        // Update chart data if a device is selected
-        if (selectedDevice) {
-          const updatedDevice = data.find(d => d.device_id === selectedDevice.device_id);
+        // Update chart data if a device is selected (use ref to avoid dependency)
+        if (selectedDeviceRef.current) {
+          const updatedDevice = data.find(d => d.device_id === selectedDeviceRef.current!.device_id);
           if (updatedDevice) {
             setSelectedDevice(updatedDevice);
             setChartData(prev => {
@@ -64,7 +70,7 @@ const Dashboard: React.FC = () => {
     return () => {
       sseClient.current?.disconnect();
     };
-  }, [selectedDevice]);
+  }, []); // Empty dependency array - only run once
 
   const handleDeviceClick = (device: DeviceReading) => {
     setSelectedDevice(device);
