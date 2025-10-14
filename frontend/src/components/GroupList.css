@@ -11,7 +11,9 @@
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   transition: all var(--transition);
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
 }
 
 .group-card:hover {
@@ -21,12 +23,7 @@
 }
 
 .group-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   margin-bottom: var(--spacing-md);
-  gap: var(--spacing-md);
-  min-height: 48px;
 }
 
 .group-name {
@@ -34,9 +31,6 @@
   font-size: var(--text-xl);
   color: var(--text-primary);
   font-weight: var(--font-semibold);
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 100%;
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: normal;
@@ -49,60 +43,64 @@
 .group-actions {
   display: flex;
   gap: var(--spacing-sm);
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  margin-top: auto;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
 }
 
-.btn-view,
-.btn-edit,
-.btn-delete {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: none;
-  background: none;
+.group-list .btn-view,
+.group-list .btn-edit,
+.group-list .btn-delete {
+  padding: 3px 10px;
+  border: 1px solid transparent;
   cursor: pointer;
   border-radius: var(--radius-md);
   transition: all var(--transition);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-xs);
-  font-size: var(--text-sm);
+  font-size: 12px;
+  font-weight: var(--font-medium);
   white-space: nowrap;
+  min-width: 55px;
 }
 
-.btn-view {
+.group-list .btn-view {
   color: white;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-  font-weight: var(--font-medium);
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.group-list .btn-view:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
 
-.btn-view:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--primary-dark));
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+.group-list .btn-edit {
+  padding: 3px 10px;
+  color: white;
+  background: var(--warning-color);
+  border-color: var(--warning-color);
 }
 
-.btn-edit,
-.btn-delete {
-  padding: var(--spacing-sm);
-  color: var(--text-secondary);
-  background-color: var(--gray-100);
-  min-width: 36px;
-  height: 36px;
-  justify-content: center;
+.group-list .btn-edit:hover {
+  background: var(--warning-hover);
+  border-color: var(--warning-hover);
 }
 
-.btn-edit:hover {
-  background-color: var(--gray-200);
-  color: var(--primary-color);
-  transform: scale(1.1);
+.group-list .btn-delete {
+  padding: 3px 10px;
+  color: white;
+  background: var(--error-color);
+  border-color: var(--error-color);
 }
 
-.btn-delete:hover {
-  background-color: var(--error-bg);
-  color: var(--error-color);
-  transform: scale(1.1);
+.group-list .btn-delete:hover {
+  background: var(--error-hover);
+  border-color: var(--error-hover);
 }
 
 .group-description {
@@ -178,13 +176,14 @@
     grid-template-columns: 1fr;
   }
 
-  .group-card-header {
-    flex-direction: column;
-    align-items: flex-start;
+  .group-actions {
+    flex-wrap: wrap;
   }
 
-  .group-actions {
-    width: 100%;
-    justify-content: flex-end;
+  .group-list .btn-view,
+  .group-list .btn-edit,
+  .group-list .btn-delete {
+    flex: 1;
+    min-width: 60px;
   }
 }

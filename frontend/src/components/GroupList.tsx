@@ -57,33 +57,6 @@ const GroupList: React.FC<GroupListProps> = ({
         <div key={group.id} className="group-card">
           <div className="group-card-header">
             <h3 className="group-name">{group.name}</h3>
-            <div className="group-actions">
-              <button
-                className="btn-view"
-                onClick={() => handleViewGroup(group.id)}
-                title={t('groups.viewGroup')}
-              >
-                {t('common.view', { defaultValue: 'View' })}
-              </button>
-              {canEdit && onEdit && (
-                <button
-                  className="btn-edit"
-                  onClick={() => onEdit(group.id)}
-                  title={t('groups.editGroup')}
-                >
-                  ✏️
-                </button>
-              )}
-              {canEdit && onDelete && (
-                <button
-                  className="btn-delete"
-                  onClick={() => onDelete(group.id)}
-                  title={t('groups.deleteGroup')}
-                >
-                  🗑️
-                </button>
-              )}
-            </div>
           </div>
 
           {group.description && (
@@ -101,6 +74,34 @@ const GroupList: React.FC<GroupListProps> = ({
               <span className="metadata-label">Created:</span>
               <span className="metadata-value">{formatDate(group.created_at)}</span>
             </div>
+          </div>
+
+          <div className="group-actions">
+            <button
+              className="btn-view"
+              onClick={() => handleViewGroup(group.id)}
+              title={t('groups.viewGroup')}
+            >
+              {t('common.view', { defaultValue: 'View' })}
+            </button>
+            {canEdit && onEdit && (
+              <button
+                className="btn-edit"
+                onClick={() => onEdit(group.id)}
+                title={t('groups.editGroup')}
+              >
+                {t('common.edit', { defaultValue: 'Edit' })}
+              </button>
+            )}
+            {canEdit && onDelete && (
+              <button
+                className="btn-delete"
+                onClick={() => onDelete(group.id)}
+                title={t('groups.deleteGroup')}
+              >
+                {t('common.delete', { defaultValue: 'Delete' })}
+              </button>
+            )}
           </div>
         </div>
       ))}
