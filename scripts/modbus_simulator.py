@@ -31,9 +31,46 @@ import logging
 import time
 import math
 import random
-from pymodbus.server.sync import StartTcpServer
-from pymodbus.device import ModbusDeviceIdentification
-from pymodbus.datastore import ModbusSequentialDataBlock, ModbusSlaveContext, ModbusServerContext
+import struct
+import threading
+
+try:
+    # Try pymodbus 3.x API first
+    from pymodbus.server import StartTcpServer
+    from pymodbus.datastore import (
+        ModbusSequentialDataBlock,
+        ModbusServerContext
+    )
+    # In pymodbus 3.x, ModbusSlaveContext is now ModbusDeviceContext
+    try:
+        from pymodbus.datastore import ModbusSlaveContext
+    except ImportError:
+        from pymodbus.datastore import ModbusDeviceContext as ModbusSlaveContext
+
+    PYMODBUS_V3 = True
+    # Device identification is optional in v3
+    try:
+        from pymodbus.device import ModbusDeviceIdentification
+        HAS_DEVICE_ID = True
+    except ImportError:
+        HAS_DEVICE_ID = False
+except ImportError as e:
+    # Fall back to pymodbus 2.x API
+    try:
+        from pymodbus.server.sync import StartTcpServer
+        from pymodbus.device import ModbusDeviceIdentification
+        from pymodbus.datastore import (
+            ModbusSequentialDataBlock,
+            ModbusSlaveContext,
+            ModbusServerContext
+        )
+        PYMODBUS_V3 = False
+        HAS_DEVICE_ID = True
+    except ImportError as e2:
+        print(f"Error: pymodbus is not installed or version is incompatible")
+        print(f"Please install pymodbus: pip install pymodbus")
+        print(f"Details: {e2}")
+        exit(1)
 
 # Configure logging
 logging.basicConfig(
@@ -88,7 +125,6 @@ class SimulatedDevice:
         Convert float to two 16-bit Modbus registers (32-bit float)
         Uses IEEE 754 single precision format
         """
-        import struct
         # Pack float as 4 bytes
         bytes_val = struct.pack('>f', value)
         # Unpack as two 16-bit integers
@@ -96,7 +132,7 @@ class SimulatedDevice:
         return high, low
 
 
-def update_registers_callback(context):
+def update_registers_callback(context, slave_id):
     """Callback to continuously update simulated sensor values"""
     simulator = SimulatedDevice()
 
@@ -117,7 +153,6 @@ def update_registers_callback(context):
                 # Registers 0-1: Temperature
                 # Registers 2-3: Pressure
                 # Registers 4-5: Flow Rate
-                slave_id = 0x01
                 fx = 0x03  # Holding Registers
                 address = 0x00
 
@@ -143,7 +178,6 @@ def update_registers_callback(context):
                 logger.error(f"Error updating registers: {e}")
                 time.sleep(2)
 
-    import threading
     updater_thread = threading.Thread(target=updater, daemon=True)
     updater_thread.start()
 
@@ -160,24 +194,33 @@ def run_server(port=5020, slave_id=1):
         ir=ModbusSequentialDataBlock(0, [0]*100),  # Input Registers
     )
 
-    context = ModbusServerContext(slaves={slave_id: store}, single=False)
+    # Create server context - API differs between versions
+    if PYMODBUS_V3:
+        # pymodbus 3.x uses 'devices' parameter
+        context = ModbusServerContext(devices={slave_id: store}, single=False)
+    else:
+        # pymodbus 2.x uses 'slaves' parameter
+        context = ModbusServerContext(slaves={slave_id: store}, single=False)
 
-    # Device identification
-    identity = ModbusDeviceIdentification()
-    identity.VendorName = 'DDMS Simulator'
-    identity.ProductCode = 'DDMS-SIM'
-    identity.VendorUrl = 'http://localhost'
-    identity.ProductName = 'DDMS Test Device Simulator'
-    identity.ModelName = 'Temperature/Pressure/Flow Sensor'
-    identity.MajorMinorRevision = '1.0.0'
+    # Device identification (optional)
+    identity = None
+    if HAS_DEVICE_ID:
+        identity = ModbusDeviceIdentification()
+        identity.VendorName = 'DDMS Simulator'
+        identity.ProductCode = 'DDMS-SIM'
+        identity.VendorUrl = 'http://localhost'
+        identity.ProductName = 'DDMS Test Device Simulator'
+        identity.ModelName = 'Temperature/Pressure/Flow Sensor'
+        identity.MajorMinorRevision = '1.0.0'
 
     # Start background updater
-    update_registers_callback(context)
+    update_registers_callback(context, slave_id)
 
-    # Start server
+    # Print startup information
     logger.info("=" * 70)
     logger.info("DDMS Modbus TCP Simulator Started")
     logger.info("=" * 70)
+    logger.info(f"PyModbus Version: {'3.x' if PYMODBUS_V3 else '2.x'}")
     logger.info(f"Listening on: 127.0.0.1:{port}")
     logger.info(f"Slave ID: {slave_id}")
     logger.info("")
@@ -201,7 +244,32 @@ def run_server(port=5020, slave_id=1):
     logger.info("")
 
     try:
-        StartTcpServer(context, identity=identity, address=("127.0.0.1", port))
+        if PYMODBUS_V3:
+            # pymodbus 3.x API
+            if identity:
+                StartTcpServer(
+                    context=context,
+                    identity=identity,
+                    address=("127.0.0.1", port)
+                )
+            else:
+                StartTcpServer(
+                    context=context,
+                    address=("127.0.0.1", port)
+                )
+        else:
+            # pymodbus 2.x API
+            if identity:
+                StartTcpServer(
+                    context,
+                    identity=identity,
+                    address=("127.0.0.1", port)
+                )
+            else:
+                StartTcpServer(
+                    context,
+                    address=("127.0.0.1", port)
+                )
     except KeyboardInterrupt:
         logger.info("\nShutting down simulator...")
 
