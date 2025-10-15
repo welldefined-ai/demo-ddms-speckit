@@ -1,0 +1,189 @@
+.group-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-xl);
+  animation: fadeIn var(--transition-slow) ease-out;
+}
+
+.group-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.group-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--primary-color);
+}
+
+.group-card-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.group-name {
+  margin: 0;
+  font-size: var(--text-xl);
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.group-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: auto;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.group-list .btn-view,
+.group-list .btn-edit,
+.group-list .btn-delete {
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: 12px;
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+  min-width: 55px;
+}
+
+.group-list .btn-view {
+  color: white;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.group-list .btn-view:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.group-list .btn-edit {
+  padding: 3px 10px;
+  color: white;
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+}
+
+.group-list .btn-edit:hover {
+  background: var(--warning-hover);
+  border-color: var(--warning-hover);
+}
+
+.group-list .btn-delete {
+  padding: 3px 10px;
+  color: white;
+  background: var(--error-color);
+  border-color: var(--error-color);
+}
+
+.group-list .btn-delete:hover {
+  background: var(--error-hover);
+  border-color: var(--error-hover);
+}
+
+.group-description {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: 1.6;
+}
+
+.group-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+  margin-top: var(--spacing-sm);
+}
+
+.metadata-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  padding: var(--spacing-xs) 0;
+}
+
+.metadata-label {
+  color: var(--text-secondary);
+  font-weight: var(--font-normal);
+}
+
+.metadata-value {
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+  background: var(--gray-100);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border-light);
+  animation: fadeIn var(--transition-slow) ease-out;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.3;
+  filter: grayscale(100%);
+}
+
+.empty-state h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-primary);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .group-list {
+    grid-template-columns: 1fr;
+  }
+
+  .group-actions {
+    flex-wrap: wrap;
+  }
+
+  .group-list .btn-view,
+  .group-list .btn-edit,
+  .group-list .btn-delete {
+    flex: 1;
+    min-width: 60px;
+  }
+}

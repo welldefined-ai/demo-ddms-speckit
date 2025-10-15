@@ -1,0 +1,86 @@
+.dashboard {
+  padding: var(--spacing-xl);
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  animation: fadeIn var(--transition-slow) ease-out;
+}
+
+.dashboard-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  margin-bottom: var(--spacing-2xl);
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-light);
+}
+
+.dashboard-empty {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border-light);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow);
+  animation: fadeIn var(--transition-slow) ease-out;
+}
+
+.dashboard-empty p {
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  margin: var(--spacing-md) 0;
+}
+
+.dashboard-devices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-3xl);
+}
+
+.dashboard-chart-section {
+  background: var(--bg-primary);
+  padding: var(--spacing-2xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  transition: box-shadow var(--transition);
+}
+
+.dashboard-chart-section:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-chart-section h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border-light);
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: var(--spacing-md);
+  }
+
+  .dashboard-title {
+    font-size: var(--text-2xl);
+  }
+
+  .dashboard-devices {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .dashboard-chart-section {
+    padding: var(--spacing-lg);
+  }
+}
