@@ -1,0 +1,955 @@
+openapi: 3.0.3
+info:
+  title: DDMS (Device Data Monitoring System) API - Feature 002
+  description: |
+    API specification for system configuration, health checks, metrics, backups, and notifications
+    added in feature 002-finish-remaining-tasks.
+
+    This specification covers NEW endpoints introduced in feature 002:
+    - System health monitoring
+    - System configuration management
+    - Prometheus metrics exposure
+    - Database backup management
+    - Connection failure notifications
+
+    For existing endpoints from feature 001 (auth, users, devices, readings, groups, export),
+    please refer to the feature 001 API documentation.
+  version: 1.0.0
+  contact:
+    name: DDMS API Support
+    email: support@ddms.example.com
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+  - url: https://api.ddms.example.com
+    description: Production server
+
+tags:
+  - name: system
+    description: System configuration and health monitoring
+  - name: metrics
+    description: Prometheus metrics endpoint
+  - name: backups
+    description: Database backup management
+  - name: notifications
+    description: Connection failure notifications
+
+security:
+  - BearerAuth: []
+
+paths:
+  /api/system/health:
+    get:
+      tags:
+        - system
+      summary: Get system health status
+      description: |
+        Returns the current health status of the DDMS system including database connectivity,
+        uptime, and device counts. This endpoint does not require authentication and is
+        intended for use by external monitoring systems.
+
+        **Functional Requirement:** FR-007
+      operationId: getSystemHealth
+      security: []
+      responses:
+        '200':
+          description: System health information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckResponse'
+              examples:
+                healthy:
+                  summary: Healthy system
+                  value:
+                    status: "healthy"
+                    database: "connected"
+                    uptime_seconds: 86400
+                    device_count: 150
+                    active_device_count: 142
+                    timestamp: "2025-10-16T10:30:00Z"
+                unhealthy:
+                  summary: Unhealthy system (database issue)
+                  value:
+                    status: "unhealthy"
+                    database: "disconnected"
+                    uptime_seconds: 3600
+                    device_count: 0
+                    active_device_count: 0
+                    timestamp: "2025-10-16T10:30:00Z"
+                    error: "Database connection pool exhausted"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/system/config:
+    get:
+      tags:
+        - system
+      summary: Get system configuration
+      description: |
+        Retrieves the current system configuration including backup schedules,
+        retention policies, and other system-wide settings.
+
+        **Functional Requirement:** FR-002
+
+        **Access Control:**
+        - Owner: Full access
+        - Admin: Full access
+        - Read-only: Full access
+      operationId: getSystemConfig
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: System configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationResponse'
+              examples:
+                default:
+                  summary: Default configuration
+                  value:
+                    backup_schedule_cron: "0 2 * * *"
+                    default_retention_days: 90
+                    max_connection_failures_before_alert: 3
+                    connection_check_interval_seconds: 300
+                    enable_email_notifications: true
+                    enable_prometheus_metrics: true
+                    max_backup_retention_count: 7
+                    created_at: "2025-10-01T00:00:00Z"
+                    updated_at: "2025-10-15T14:30:00Z"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - system
+      summary: Update system configuration
+      description: |
+        Updates system configuration settings. Only users with owner role can modify
+        system configuration.
+
+        **Functional Requirement:** FR-006
+
+        **Access Control:**
+        - Owner: Can update
+        - Admin: Cannot update (403)
+        - Read-only: Cannot update (403)
+      operationId: updateSystemConfig
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigurationUpdate'
+            examples:
+              updateBackupSchedule:
+                summary: Update backup schedule
+                value:
+                  backup_schedule_cron: "0 3 * * *"
+                  max_backup_retention_count: 10
+              updateRetentionPolicy:
+                summary: Update retention policy
+                value:
+                  default_retention_days: 180
+                  max_connection_failures_before_alert: 5
+              enableNotifications:
+                summary: Enable email notifications
+                value:
+                  enable_email_notifications: true
+                  connection_check_interval_seconds: 600
+      responses:
+        '200':
+          description: Configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationResponse'
+              examples:
+                success:
+                  summary: Updated configuration
+                  value:
+                    backup_schedule_cron: "0 3 * * *"
+                    default_retention_days: 180
+                    max_connection_failures_before_alert: 5
+                    connection_check_interval_seconds: 600
+                    enable_email_notifications: true
+                    enable_prometheus_metrics: true
+                    max_backup_retention_count: 10
+                    created_at: "2025-10-01T00:00:00Z"
+                    updated_at: "2025-10-16T10:30:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /metrics:
+    get:
+      tags:
+        - metrics
+      summary: Get Prometheus metrics
+      description: |
+        Returns system metrics in Prometheus text exposition format for scraping by
+        Prometheus monitoring systems. This endpoint does not require authentication
+        to allow Prometheus scrapers to collect metrics.
+
+        **Functional Requirement:** FR-029
+
+        **Exposed Metrics:**
+        - `ddms_devices_total`: Total number of registered devices
+        - `ddms_devices_active`: Number of active devices
+        - `ddms_devices_inactive`: Number of inactive devices
+        - `ddms_readings_total`: Total number of readings recorded
+        - `ddms_database_backup_last_success_timestamp`: Unix timestamp of last successful backup
+        - `ddms_connection_failures_total`: Total number of connection failures
+        - `ddms_http_requests_total`: Total HTTP requests by endpoint and status
+        - `ddms_http_request_duration_seconds`: HTTP request duration histogram
+      operationId: getMetrics
+      security: []
+      responses:
+        '200':
+          description: Metrics retrieved successfully in Prometheus format
+          content:
+            text/plain; version=0.0.4:
+              schema:
+                type: string
+              example: |
+                # HELP ddms_devices_total Total number of registered devices
+                # TYPE ddms_devices_total gauge
+                ddms_devices_total 150
+                # HELP ddms_devices_active Number of active devices
+                # TYPE ddms_devices_active gauge
+                ddms_devices_active 142
+                # HELP ddms_devices_inactive Number of inactive devices
+                # TYPE ddms_devices_inactive gauge
+                ddms_devices_inactive 8
+                # HELP ddms_readings_total Total number of readings recorded
+                # TYPE ddms_readings_total counter
+                ddms_readings_total 1250000
+                # HELP ddms_database_backup_last_success_timestamp Unix timestamp of last successful backup
+                # TYPE ddms_database_backup_last_success_timestamp gauge
+                ddms_database_backup_last_success_timestamp 1729065600
+                # HELP ddms_connection_failures_total Total number of connection failures
+                # TYPE ddms_connection_failures_total counter
+                ddms_connection_failures_total 45
+                # HELP ddms_http_requests_total Total HTTP requests by endpoint and status
+                # TYPE ddms_http_requests_total counter
+                ddms_http_requests_total{endpoint="/api/devices",status="200"} 5420
+                ddms_http_requests_total{endpoint="/api/readings",status="200"} 12350
+                ddms_http_requests_total{endpoint="/api/auth/login",status="401"} 12
+                # HELP ddms_http_request_duration_seconds HTTP request duration
+                # TYPE ddms_http_request_duration_seconds histogram
+                ddms_http_request_duration_seconds_bucket{endpoint="/api/devices",le="0.1"} 4500
+                ddms_http_request_duration_seconds_bucket{endpoint="/api/devices",le="0.5"} 5200
+                ddms_http_request_duration_seconds_bucket{endpoint="/api/devices",le="1"} 5400
+                ddms_http_request_duration_seconds_bucket{endpoint="/api/devices",le="+Inf"} 5420
+                ddms_http_request_duration_seconds_sum{endpoint="/api/devices"} 890.5
+                ddms_http_request_duration_seconds_count{endpoint="/api/devices"} 5420
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/system/backup:
+    post:
+      tags:
+        - backups
+      summary: Trigger database backup
+      description: |
+        Initiates a manual database backup job. The backup runs asynchronously and
+        its status can be monitored via the GET /api/system/backups endpoint.
+
+        **Functional Requirement:** FR-015
+
+        **Access Control:**
+        - Owner: Can trigger backups
+        - Admin: Cannot trigger backups (403)
+        - Read-only: Cannot trigger backups (403)
+      operationId: createBackup
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackupRequest'
+            examples:
+              withDescription:
+                summary: Backup with description
+                value:
+                  description: "Pre-maintenance backup"
+              empty:
+                summary: Backup without description
+                value: {}
+      responses:
+        '202':
+          description: Backup job created and started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupJobResponse'
+              examples:
+                success:
+                  summary: Backup job initiated
+                  value:
+                    id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    status: "in_progress"
+                    description: "Pre-maintenance backup"
+                    initiated_by: "admin@example.com"
+                    started_at: "2025-10-16T10:30:00Z"
+                    completed_at: null
+                    file_path: null
+                    file_size_bytes: null
+                    error_message: null
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/system/backups:
+    get:
+      tags:
+        - backups
+      summary: List database backups
+      description: |
+        Retrieves a list of database backup jobs with filtering and pagination support.
+
+        **Access Control:**
+        - Owner: Full access
+        - Admin: Full access
+        - Read-only: Cannot access (403)
+      operationId: listBackups
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of backup records to return
+          required: false
+          schema:
+            type: integer
+            default: 30
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of records to skip for pagination
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: status
+          in: query
+          description: Filter backups by status
+          required: false
+          schema:
+            type: string
+            enum: [in_progress, completed, failed]
+      responses:
+        '200':
+          description: List of backup jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupJobListResponse'
+              examples:
+                success:
+                  summary: List of backups
+                  value:
+                    backups:
+                      - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                        status: "completed"
+                        description: "Pre-maintenance backup"
+                        initiated_by: "admin@example.com"
+                        started_at: "2025-10-16T10:30:00Z"
+                        completed_at: "2025-10-16T10:35:00Z"
+                        file_path: "/backups/backup_20251016_103000.sql.gz"
+                        file_size_bytes: 52428800
+                        error_message: null
+                      - id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+                        status: "completed"
+                        description: "Scheduled nightly backup"
+                        initiated_by: "system"
+                        started_at: "2025-10-16T02:00:00Z"
+                        completed_at: "2025-10-16T02:04:30Z"
+                        file_path: "/backups/backup_20251016_020000.sql.gz"
+                        file_size_bytes: 51200000
+                        error_message: null
+                      - id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+                        status: "failed"
+                        description: "Scheduled nightly backup"
+                        initiated_by: "system"
+                        started_at: "2025-10-15T02:00:00Z"
+                        completed_at: "2025-10-15T02:00:15Z"
+                        file_path: null
+                        file_size_bytes: null
+                        error_message: "Disk space insufficient"
+                    total: 45
+                    limit: 30
+                    offset: 0
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/notifications/connection-failures:
+    get:
+      tags:
+        - notifications
+      summary: List connection failure notifications
+      description: |
+        Retrieves a list of connection failure notifications with filtering support.
+
+        **Functional Requirement:** FR-018
+
+        **Access Control:**
+        - Owner: Full access
+        - Admin: Full access
+        - Read-only: Cannot access (403)
+      operationId: listConnectionFailureNotifications
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: acknowledged
+          in: query
+          description: Filter by acknowledgment status
+          required: false
+          schema:
+            type: boolean
+        - name: device_id
+          in: query
+          description: Filter by specific device UUID
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          description: Maximum number of notifications to return
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 200
+        - name: offset
+          in: query
+          description: Number of records to skip for pagination
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: List of connection failure notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListResponse'
+              examples:
+                unacknowledged:
+                  summary: Unacknowledged notifications
+                  value:
+                    notifications:
+                      - id: "d4e5f6a7-b8c9-0123-def0-123456789abc"
+                        device_id: "e5f6a7b8-c9d0-1234-ef01-23456789abcd"
+                        device_name: "Temperature Sensor A1"
+                        failure_count: 5
+                        first_failure_at: "2025-10-16T08:00:00Z"
+                        last_failure_at: "2025-10-16T10:20:00Z"
+                        acknowledged: false
+                        acknowledged_by: null
+                        acknowledged_at: null
+                        created_at: "2025-10-16T08:00:00Z"
+                      - id: "e5f6a7b8-c9d0-1234-ef01-23456789abcd"
+                        device_id: "f6a7b8c9-d0e1-2345-f012-3456789abcde"
+                        device_name: "Pressure Sensor B2"
+                        failure_count: 3
+                        first_failure_at: "2025-10-16T09:30:00Z"
+                        last_failure_at: "2025-10-16T10:15:00Z"
+                        acknowledged: false
+                        acknowledged_by: null
+                        acknowledged_at: null
+                        created_at: "2025-10-16T09:30:00Z"
+                    total: 12
+                    limit: 50
+                    offset: 0
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/notifications/connection-failures/{id}:
+    delete:
+      tags:
+        - notifications
+      summary: Acknowledge connection failure notification
+      description: |
+        Marks a connection failure notification as acknowledged by deleting it.
+        This endpoint returns 204 No Content on success.
+
+        **Functional Requirement:** FR-019
+
+        **Access Control:**
+        - Owner: Can acknowledge
+        - Admin: Can acknowledge
+        - Read-only: Cannot acknowledge (403)
+      operationId: acknowledgeConnectionFailureNotification
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: UUID of the notification to acknowledge
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Notification acknowledged successfully (no content returned)
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token obtained from the authentication endpoint (/api/auth/login).
+
+        Example: `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+
+  schemas:
+    HealthCheckResponse:
+      type: object
+      required:
+        - status
+        - database
+        - uptime_seconds
+        - device_count
+        - active_device_count
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+          description: Overall system health status
+        database:
+          type: string
+          enum: [connected, disconnected]
+          description: Database connectivity status
+        uptime_seconds:
+          type: integer
+          description: System uptime in seconds
+          minimum: 0
+        device_count:
+          type: integer
+          description: Total number of registered devices
+          minimum: 0
+        active_device_count:
+          type: integer
+          description: Number of currently active devices
+          minimum: 0
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when health check was performed
+        error:
+          type: string
+          description: Error message if system is unhealthy (optional)
+
+    ConfigurationResponse:
+      type: object
+      required:
+        - backup_schedule_cron
+        - default_retention_days
+        - max_connection_failures_before_alert
+        - connection_check_interval_seconds
+        - enable_email_notifications
+        - enable_prometheus_metrics
+        - max_backup_retention_count
+        - created_at
+        - updated_at
+      properties:
+        backup_schedule_cron:
+          type: string
+          description: Cron expression for automated backup schedule
+          example: "0 2 * * *"
+        default_retention_days:
+          type: integer
+          description: Default number of days to retain device readings
+          minimum: 1
+          example: 90
+        max_connection_failures_before_alert:
+          type: integer
+          description: Number of consecutive connection failures before triggering alert
+          minimum: 1
+          example: 3
+        connection_check_interval_seconds:
+          type: integer
+          description: Interval in seconds between connection health checks
+          minimum: 60
+          example: 300
+        enable_email_notifications:
+          type: boolean
+          description: Whether email notifications are enabled
+          example: true
+        enable_prometheus_metrics:
+          type: boolean
+          description: Whether Prometheus metrics endpoint is enabled
+          example: true
+        max_backup_retention_count:
+          type: integer
+          description: Maximum number of backup files to retain
+          minimum: 1
+          example: 7
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when configuration was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when configuration was last updated
+
+    ConfigurationUpdate:
+      type: object
+      properties:
+        backup_schedule_cron:
+          type: string
+          description: Cron expression for automated backup schedule
+          example: "0 3 * * *"
+        default_retention_days:
+          type: integer
+          description: Default number of days to retain device readings
+          minimum: 1
+          example: 180
+        max_connection_failures_before_alert:
+          type: integer
+          description: Number of consecutive connection failures before triggering alert
+          minimum: 1
+          example: 5
+        connection_check_interval_seconds:
+          type: integer
+          description: Interval in seconds between connection health checks
+          minimum: 60
+          example: 600
+        enable_email_notifications:
+          type: boolean
+          description: Whether email notifications are enabled
+          example: true
+        enable_prometheus_metrics:
+          type: boolean
+          description: Whether Prometheus metrics endpoint is enabled
+          example: true
+        max_backup_retention_count:
+          type: integer
+          description: Maximum number of backup files to retain
+          minimum: 1
+          example: 10
+
+    BackupRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Optional description for the backup
+          maxLength: 255
+          example: "Pre-maintenance backup"
+
+    BackupJobResponse:
+      type: object
+      required:
+        - id
+        - status
+        - initiated_by
+        - started_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the backup job
+        status:
+          type: string
+          enum: [in_progress, completed, failed]
+          description: Current status of the backup job
+        description:
+          type: string
+          description: Description of the backup
+          nullable: true
+        initiated_by:
+          type: string
+          description: Email of user who initiated the backup, or 'system' for scheduled backups
+        started_at:
+          type: string
+          format: date-time
+          description: Timestamp when backup started
+        completed_at:
+          type: string
+          format: date-time
+          description: Timestamp when backup completed (null if in progress)
+          nullable: true
+        file_path:
+          type: string
+          description: Path to backup file (null if not completed)
+          nullable: true
+        file_size_bytes:
+          type: integer
+          description: Size of backup file in bytes (null if not completed)
+          minimum: 0
+          nullable: true
+        error_message:
+          type: string
+          description: Error message if backup failed
+          nullable: true
+
+    BackupJobListResponse:
+      type: object
+      required:
+        - backups
+        - total
+        - limit
+        - offset
+      properties:
+        backups:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupJobResponse'
+        total:
+          type: integer
+          description: Total number of backup records matching the filter
+          minimum: 0
+        limit:
+          type: integer
+          description: Maximum number of records returned
+          minimum: 1
+        offset:
+          type: integer
+          description: Number of records skipped
+          minimum: 0
+
+    ConnectionFailureNotification:
+      type: object
+      required:
+        - id
+        - device_id
+        - device_name
+        - failure_count
+        - first_failure_at
+        - last_failure_at
+        - acknowledged
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the notification
+        device_id:
+          type: string
+          format: uuid
+          description: UUID of the device experiencing connection failures
+        device_name:
+          type: string
+          description: Name of the device
+        failure_count:
+          type: integer
+          description: Number of consecutive connection failures
+          minimum: 1
+        first_failure_at:
+          type: string
+          format: date-time
+          description: Timestamp of first connection failure
+        last_failure_at:
+          type: string
+          format: date-time
+          description: Timestamp of most recent connection failure
+        acknowledged:
+          type: boolean
+          description: Whether the notification has been acknowledged
+        acknowledged_by:
+          type: string
+          description: Email of user who acknowledged the notification
+          nullable: true
+        acknowledged_at:
+          type: string
+          format: date-time
+          description: Timestamp when notification was acknowledged
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when notification was created
+
+    NotificationListResponse:
+      type: object
+      required:
+        - notifications
+        - total
+        - limit
+        - offset
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionFailureNotification'
+        total:
+          type: integer
+          description: Total number of notifications matching the filter
+          minimum: 0
+        limit:
+          type: integer
+          description: Maximum number of records returned
+          minimum: 1
+        offset:
+          type: integer
+          description: Number of records skipped
+          minimum: 0
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code or type
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details (optional)
+          additionalProperties: true
+
+  responses:
+    BadRequestError:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidCron:
+              summary: Invalid cron expression
+              value:
+                error: "validation_error"
+                message: "Invalid cron expression format"
+                details:
+                  field: "backup_schedule_cron"
+                  value: "invalid cron"
+            invalidRetention:
+              summary: Invalid retention days
+              value:
+                error: "validation_error"
+                message: "default_retention_days must be at least 1"
+                details:
+                  field: "default_retention_days"
+                  value: 0
+
+    UnauthorizedError:
+      description: Unauthorized - missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            missingToken:
+              summary: Missing authentication token
+              value:
+                error: "unauthorized"
+                message: "Authentication token required"
+            invalidToken:
+              summary: Invalid or expired token
+              value:
+                error: "unauthorized"
+                message: "Invalid or expired authentication token"
+
+    ForbiddenError:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            insufficientPermissions:
+              summary: Insufficient permissions
+              value:
+                error: "forbidden"
+                message: "Insufficient permissions to perform this operation"
+            ownerOnly:
+              summary: Owner role required
+              value:
+                error: "forbidden"
+                message: "Only users with owner role can perform this operation"
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            notificationNotFound:
+              summary: Notification not found
+              value:
+                error: "not_found"
+                message: "Notification not found"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            genericError:
+              summary: Generic internal error
+              value:
+                error: "internal_error"
+                message: "An unexpected error occurred"
+            databaseError:
+              summary: Database error
+              value:
+                error: "database_error"
+                message: "Database operation failed"
