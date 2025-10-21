@@ -10,6 +10,7 @@ from src.models.reading import Reading
 from src.models.group import Group
 from src.models.device_group import DeviceGroup
 from src.models.configuration import Configuration
+from src.models.notification import Notification, NotificationType, NotificationSeverity
 
 __all__ = [
     "User",
@@ -20,4 +21,7 @@ __all__ = [
     "Group",
     "DeviceGroup",
     "Configuration",
+    "Notification",
+    "NotificationType",
+    "NotificationSeverity",
 ]
