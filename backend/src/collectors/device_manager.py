@@ -13,6 +13,7 @@ from src.models.reading import Reading
 from src.collectors.modbus_collector import ModbusCollector
 from src.db.session import SessionLocal
 from src.utils.logging import get_logger
+from src.services.notification_service import create_device_disconnect_notification
 
 logger = get_logger(__name__)
 
@@ -204,8 +205,18 @@ class DeviceManager:
                             f"Connection lost. Will retry every {reconnection_delay}s."
                         )
 
-                        # TODO (FR-034b): Send notification to frontend
-                        # This would be implemented in User Story notification system
+                        # Create notification for all admin/owner users
+                        try:
+                            create_device_disconnect_notification(
+                                db=db,
+                                device_id=device.id,
+                                device_name=device.name,
+                                device_ip=device.modbus_ip,
+                                last_reading_at=device.last_reading_at
+                            )
+                        except Exception as e:
+                            # Don't let notification failures block device polling
+                            logger.error(f"Failed to create device disconnect notification: {e}")
 
                     # Reconnection delay
                     await asyncio.sleep(reconnection_delay)

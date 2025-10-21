@@ -24,7 +24,7 @@ class DeviceStatusSchema(str, Enum):
 # User Schemas
 class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
-    language_preference: str = Field(default="en", regex="^(en|zh)$")
+    language_preference: str = Field(default="en", pattern="^(en|zh)$")
 
 
 class UserCreate(UserBase):
@@ -182,3 +182,48 @@ class HealthResponse(BaseModel):
     status: str
     database: str
     timestamp: datetime
+
+
+# Notification Schemas
+class NotificationTypeSchema(str, Enum):
+    DEVICE_DISCONNECT = "device_disconnect"
+    DEVICE_ALERT = "device_alert"
+    SYSTEM = "system"
+
+
+class NotificationSeveritySchema(str, Enum):
+    INFO = "info"
+    WARNING = "warning"
+    ERROR = "error"
+    CRITICAL = "critical"
+
+
+class NotificationResponse(BaseModel):
+    id: UUID
+    type: NotificationTypeSchema
+    severity: NotificationSeveritySchema
+    title: str
+    message: str
+    device_id: Optional[UUID]
+    metadata: Optional[dict]
+    read_at: Optional[datetime]
+    dismissed_at: Optional[datetime]
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class NotificationListResponse(BaseModel):
+    notifications: List[NotificationResponse]
+    total: int
+    unread_count: int
+
+
+class UnreadCountResponse(BaseModel):
+    unread_count: int
+
+
+class MessageResponse(BaseModel):
+    message: str
